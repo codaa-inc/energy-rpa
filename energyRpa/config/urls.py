@@ -15,13 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from calculator.views import *
+from apps.calculator.views import *
+from apps.common.views import *
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', main),
-    path('data/', data),
-    path('report/', report),
-    path('save/', save)
+    path('', index),
+    path('signin/', auth_views.LoginView.as_view(), name='login'),
+    path('signout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('calcs/', uvalue_calcs),
+    #path('calcs/uvalue/<int:question_id>', uvalue_calcs)
+    path('calcs/uvalue/data/', uvalue_data),
+    path('calcs/uvalue/report/', uvalue_report),
+    path('calcs/uvalue/post/', uvalue_save)
 ]
 

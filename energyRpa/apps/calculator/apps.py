@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ServiceConfig(AppConfig):
-    name = 'calculator'
+    name = 'apps.calculator'

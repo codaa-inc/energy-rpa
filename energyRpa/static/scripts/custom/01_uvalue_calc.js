@@ -12,7 +12,7 @@ let slabHeatResistanceArr = new Array();    // 슬라브상부단열기준
 /**
 * 페이지 로딩 시 JSON 데이터를 호출하는 함수
 */
-fetch('data/').then((response) => response.json()).then((json) => initSet(json));
+fetch('calcs/uvalue/data/').then((response) => response.json()).then((json) => initSet(json));
 
 /**
  * 초기 데이터를 셋팅하는 함수

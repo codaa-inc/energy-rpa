@@ -17,10 +17,18 @@ from django.template import Context
 '''
 
 # Create your views here.
-def main(request) :
-    return render(request, 'calculator/01_uvalue_calc.html')
 
-def data(request) :
+
+
+def calcs(request):
+    return render()
+
+
+def uvalue_calcs(request):
+    print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return render(request, 'uvalue_calc.html')
+
+def uvalue_data(request):
     json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uValueCalc.json')
     with open(json_path, 'r', encoding='UTF8') as f:
         json_file = json.load(f)
@@ -39,14 +47,14 @@ def render_to_pdf(template_src, context_dict):
 '''
 
 
-def report(request) :
+def uvalue_report(request):
 
     pyautogui.hotkey("ctrl", "p")
     time.sleep(120)
 
     '''
     return render_to_pdf(
-        '01_uvalue_calc.html',
+        'uvalue_calc.html',
         {
             'pagesize': 'A4',
             'mylist': results,
@@ -56,15 +64,14 @@ def report(request) :
 
     return HttpResponse(status=201)
 
-def save(request):
-    print("들어옴")
+def uvalue_save(request):
     if request.method == 'POST':    # POST 요청이면 폼 데이터를 처리한다
         form = CalcUvalueTmplForm(request.POST)
         if form.is_valid():
             tmpl = form.save(commit=False)
             tmpl.tmpl_save()
             return HttpResponse("저장되었습니다")
-        #else:
-        #    return HttpResponse(status=201)
+        else:
+            return HttpResponse(status=201)
     else:
         return HttpResponse(status=201)
