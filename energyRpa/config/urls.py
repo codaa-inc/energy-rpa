@@ -21,13 +21,14 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index),
-    path('signin/', auth_views.LoginView.as_view(), name='login'),
+    path('signin/', signin),
     path('signout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('calcs/', uvalue_calcs),
-    #path('calcs/uvalue/<int:question_id>', uvalue_calcs)
-    path('calcs/uvalue/data/', uvalue_data),
-    path('calcs/uvalue/report/', uvalue_report),
-    path('calcs/uvalue/post/', uvalue_save)
+
+    path('', index),
+    path('calcs/', calcs),
+    path('calcs/uvalue', uvalue_calcs),
+    path('calcs/uvalue/data', uvalue_data),
+    path('calcs/uvalue/report', uvalue_report),
+    path('calcs/uvalue/post', uvalue_save)
 ]
 

@@ -12,7 +12,7 @@ let slabHeatResistanceArr = new Array();    // 슬라브상부단열기준
 /**
 * 페이지 로딩 시 JSON 데이터를 호출하는 함수
 */
-fetch('calcs/uvalue/data/').then((response) => response.json()).then((json) => initSet(json));
+fetch('/calcs/uvalue/data').then((response) => response.json()).then((json) => initSet(json));
 
 /**
  * 초기 데이터를 셋팅하는 함수
@@ -217,7 +217,7 @@ function oncliclkPrintReport() {
     $("#footer").css("display", "none");
 
     // 크롬 출력창 띄우기
-    window.location.href = "report"
+    window.location.href = "/calcs/uvalue/report"
 }
 
 /**
@@ -241,8 +241,27 @@ function onclickSave() {
     }
     // 지역구분 disable false
     $('#locale').prop("disabled", false);
-    // submit 호출
-    document.template.submit();
+
+    // ajax 호출
+    var formData = $('#template').serialize();
+    $.ajax({
+        cache : false,
+        url : "/calcs/uvalue/post",
+        type : 'POST',
+        async: false,
+        data : formData,
+        success : function(data) {
+            if (data.result) {
+                alert("저장되었습니다!");
+                window.location.href = "/calcs/"
+            } else {
+                alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
+            }
+        },
+        error : function(xhr, status) {
+            alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
+        }
+    });
 };
 
 

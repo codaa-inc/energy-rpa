@@ -7,7 +7,7 @@ from django.urls import path
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import CalcUvalueTmplForm
-from .models import *
+
 
 '''
 import io as StringIO
@@ -16,16 +16,8 @@ from django.template.loader import get_template
 from django.template import Context
 '''
 
-# Create your views here.
-
-
-
-def calcs(request):
-    return render()
-
 
 def uvalue_calcs(request):
-    print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     return render(request, 'uvalue_calc.html')
 
 def uvalue_data(request):
@@ -70,8 +62,9 @@ def uvalue_save(request):
         if form.is_valid():
             tmpl = form.save(commit=False)
             tmpl.tmpl_save()
-            return HttpResponse("저장되었습니다")
+            context = {"result": True}
         else:
-            return HttpResponse(status=201)
+            context = {"result": False}
     else:
-        return HttpResponse(status=201)
+        context = {"result": False}
+    return HttpResponse(json.dumps(context), content_type="application/json")

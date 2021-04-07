@@ -1,0 +1,88 @@
+{% load static  %}
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Basic Page Info -->
+    <meta charset="utf-8">
+    <title>Bootstrap Admin Dashboard HTML Template</title>
+
+    <!-- Site favicon -->
+    <link href="{% static 'images/custom/favicon.ico' %}" rel="icon" sizes="16x16" type="image/png">
+
+
+    <!-- Mobile Specific Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{%  static 'styles/core.css' %}">
+    <link rel="stylesheet" type="text/css" href="{%  static 'styles/icon-font.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{%  static 'styles/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+    <style> *{font-family: 'NanumSquare', sans-serif !important;}</style>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
+
+    <!-- jquery 3.2.1 -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+
+    </script>
+</head>
+<body>
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="col-md-10 col-sm-12" style="margin: auto">
+            <!-- basic table  Start -->
+            <div class="card-box">
+                <div class="clearfix" >
+                    <div class="pull-left">
+                        <h4 class="text-blue h4">My List</h4>
+                    </div>
+                </div>
+                <table style="text-align: center" class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">프로젝트</th>
+                        <th scope="col">계산기</th>
+                        <th scope="col">작성일</th>
+                        <th width="9%" scope="col">진행상태</th>
+                        <th width="9%" scope="col">수정</th>
+                        <th width="9%" scope="col">출력</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for calc in calc_list %}
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>마석우리 오피스텔</td>
+                        <td>열관류율 계산기</td>
+                        <td>{{ calc.wrt_dt}}</td>
+                        <td><span class="badge badge-primary">진행중</span></td>
+                        <td><a href="#"><span class="badge badge-secondary">수정하기</span></a></td>
+                        <td><a href="#"><span class="badge badge-success">출력하기</span></a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- basic table  End -->
+            <div id="footer" class="footer-wrap pd-20 mb-20 card-box">
+                Copyright ⓒ 2021 건축환경그룹 코다 All rights reserved.
+                <a href="https://codaa.xyz/" target="_blank">CODAA</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- js -->
+<script src="{%  static 'scripts/core.js' %}"></script>
+<script src="{%  static 'scripts/script.min.js' %}"></script>
+<script src="{%  static 'scripts/process.js' %}"></script>
+<script src="{%  static 'scripts/layout-settings.js' %}"></script>
+</body>
+</html>

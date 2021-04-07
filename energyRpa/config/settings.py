@@ -114,6 +114,8 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Seoul'
 
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 USE_I18N = True
 
 USE_L10N = True
@@ -131,8 +133,3 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
 ]
-
-# 로그인/로그아웃 성공후 이동하는 URL
-LOGIN_REDIRECT_URL = '/calcs'
-
-LOGOUT_REDIRECT_URL = '/calcs'

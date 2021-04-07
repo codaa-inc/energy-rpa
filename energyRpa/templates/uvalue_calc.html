@@ -13,27 +13,24 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link href="{%  static 'styles/core.css' %}" rel="stylesheet" type="text/css">
     <link href="{%  static 'styles/icon-font.min.css' %}" rel="stylesheet" type="text/css">
     <link href="{%  static 'styles/style.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+    <style> *{font-family: 'NanumSquare', sans-serif !important; }</style>
 
     <!-- jquery 3.2.1 -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-    <!-- 열관류율 Json Dat Request -->
-    <script>
-
-    </script>
 
     <!-- 커스텀 함수 -->
     <script src="{%  static 'scripts/custom/01_uvalue_calc.js' %}"></script>
 </head>
 <body>
-    <form name="template" action="/post" method="post">{% csrf_token %}
+    <form id="template" name="template">{% csrf_token %}
+        <input name="username" style="visibility: hidden;" value="{{ request.session.username }}">
         <div id="header" class="header" style="position : relative; margin-right: -70px; width: 100%;">
             <div class="header-left" style="width:25%">
                 <div class="col-md-12 col-sm-12">
@@ -70,6 +67,7 @@
                        style="margin-left: 10px; margin-top: 10px; cursor: pointer;">&nbsp;초기화</i>
                 </div>
             </div>
+            <!--
             <div class="left-side-bar">
                 <div class="brand-logo">
                     <a href="#">
@@ -79,6 +77,7 @@
                         <i class="ion-close-round"></i>
                     </div>
                 </div>
+
                 <div class="menu-block customscroll">
                     <div class="sidebar-menu">
                         <ul id="accordion-menu">
@@ -96,6 +95,7 @@
                 </div>
             </div>
             <div class="mobile-menu-overlay"></div>
+            -->
         </div>
         <div class="main-container" style="padding: 0px;">
             <div class="pd-ltr-20 xs-pd-20-10" style="padding: 10px;">
