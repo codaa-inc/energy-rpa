@@ -4,7 +4,7 @@ from .models import CalcUvalueTmpl
 class CalcUvalueTmplForm(forms.ModelForm):
     class Meta:
         model = CalcUvalueTmpl
-        fields = ['purps_cd', 'area_gb_cd', 'username', 'wall_direct_kind_1', 'wall_direct_thick_1',
+        fields = ['purps_cd', 'area_gb_cd', 'username', 'uvalue_tmpl_cd', 'wall_direct_kind_1', 'wall_direct_thick_1',
                   'wall_direct_width', 'wall_indirect_kind_1', 'wall_indirect_thick_1', 'wall_indirect_width',
                   'wall_direct_kind_2', 'wall_direct_thick_2', 'wall_indirect_kind_2', 'wall_indirect_thick_2',
                   'wall_direct_kind_3', 'wall_direct_thick_3', 'wall_indirect_kind_3', 'wall_indirect_thick_3',

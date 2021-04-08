@@ -1,4 +1,4 @@
-import json
+import json as json_module
 import os
 import pyautogui
 import time
@@ -6,9 +6,10 @@ import time
 from django.urls import path
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import JsonResponse
 from .forms import CalcUvalueTmplForm
-
-
+from .models import CalcUvalueTmpl
+from django.core.serializers import json
 '''
 import io as StringIO
 from xhtml2pdf import pisa
@@ -16,15 +17,26 @@ from django.template.loader import get_template
 from django.template import Context
 '''
 
-
-def uvalue_calcs(request):
+def uvalue_init_calcs(request):
     return render(request, 'uvalue_calc.html')
+
+def uvalue_user_calcs(request, uvalue_tmpl_cd):
+    if uvalue_tmpl_cd is not None:
+        return render(request, 'uvalue_calc.html', {"id": uvalue_tmpl_cd})
+
+def uvalue_user_calcs_res(request, id):
+    if id is not None:
+        calc = CalcUvalueTmpl.objects.filter(uvalue_tmpl_cd=id)
+        json_serializer = json.Serializer()
+        context = {"calc": json_serializer.serialize(calc)}
+    return JsonResponse(context)
+
 
 def uvalue_data(request):
     json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uValueCalc.json')
     with open(json_path, 'r', encoding='UTF8') as f:
-        json_file = json.load(f)
-    return HttpResponse(json.dumps(json_file), content_type="application/json")
+        json_file = json_module.load(f)
+    return HttpResponse(json_module.dumps(json_file), content_type="application/json")
 
 '''
 def render_to_pdf(template_src, context_dict):

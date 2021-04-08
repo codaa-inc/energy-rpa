@@ -26,8 +26,10 @@ urlpatterns = [
 
     path('', index),
     path('calcs/', calcs),
-    path('calcs/uvalue', uvalue_calcs),
-    path('calcs/uvalue/data', uvalue_data),
+    path('calcs/uvalue', uvalue_init_calcs),
+    path('calcs/uvalue/<int:uvalue_tmpl_cd>', uvalue_user_calcs),
+    path('calcs/uvalue/data/<int:id>', uvalue_user_calcs_res),
+    path('calcs/uvalue/initdata', uvalue_data),
     path('calcs/uvalue/report', uvalue_report),
     path('calcs/uvalue/post', uvalue_save)
 ]

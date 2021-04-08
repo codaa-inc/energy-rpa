@@ -1,201 +1,131 @@
-{% load static  %}
-<!DOCTYPE html>
-<html>
-<head>
-	<!-- Basic Page Info -->
-	<meta charset="utf-8">
-	<title>Bootstrap Admin Dashboard HTML Template</title>
-
-	<!-- Site favicon -->
-    <link href="{% static 'images/custom/favicon.ico' %}" rel="icon" sizes="16x16" type="image/png">
-
-	<!-- Mobile Specific Metas -->
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-	<!-- Google Font -->
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="{%  static 'styles/core.css' %}">
-	<link rel="stylesheet" type="text/css" href="{%  static 'styles/icon-font.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{%  static 'styles/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
-    <style> *{font-family: 'NanumSquare', sans-serif !important;}</style>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
-
-    <!-- jquery 3.2.1 -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-	<script>
-        function signin() {
-           var formData = $('#signinForm').serialize();
-           console.log(formData);
-           $.ajax({
-               cache : false,
-               url : "signin/",
-               type : 'POST',
-               async: false,
-               data : formData,
-               success : function(data){
-                   if (data.result) {
-                       window.location.href = "calcs/"
-                   } else {
-                        $('#signinResult').text(data.message);
-                   }
-               },
-               error : function(xhr,status,)
-               {
-                   $('#signinResult').text("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
-               },
-           });
-        };
-	</script>
-</head>
-<body class="login-page">
-    <!--
-	<div class="login-header box-shadow">
-		<div class="container-fluid d-flex justify-content-between align-items-center">
-
-            <div class="brand-logo">
-
-				<a href="signin.html">
-					<img src="{%  static 'images/codaa-logo.svg' %}" alt="">
-				</a>
-
-			</div>
-
-			<div class="login-menu">
-				<ul>
-					<li><a href="register.html">Register</a></li>
-				</ul>
-			</div>
-
-		</div>
-	</div>
-    -->
-	<div class="login-wrap d-flex align-items-center flex-wrap justify-content-center">
-		<div class="container">
-			<div class="row align-items-center">
-				<div class="col-md-6 col-lg-7">
-                    <!-- Fade-in effect -->
-                    <div class="row clearfix">
-                        <div class="col-md-6 col-lg-3">
-                            <div class="da-card">
-                                <div class="da-card-photo">
-                                    <img src="{%  static 'images/custom/uvalue.png' %}" alt="">
-                                    <div class="da-overlay">
-                                        <div class="da-social">
-                                            <ul class="clearfix">
-                                                <li><a href="calcs/uvalue"><i class="fa fa-calculator"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="da-card-content">
-                                    <p class="h5 mb-5" style="font-size: smaller">열관류율계산기(KS)</p>
-                                    <p class="mb-0">Lorem ipsum dolor sit amet</p>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="row align-items-center">
+        <div class="col-md-6 col-lg-7">
+            <!-- Fade-in effect -->
+            <div class="row clearfix">
+                <div class="col-md-6 col-lg-3">
+                    <div class="da-card">
+                        <div class="da-card-photo">
+                            <img src="{% static 'images/custom/uvalue.png' %}" alt="">
+                            <div class="da-overlay">
+                                <div class="da-social">
+                                    <ul class="clearfix">
+                                        <li><a href="calcs/uvalue"><i class="fa fa-calculator"></i></a></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="da-card">
-                                <div class="da-card-photo">
-                                    <img src="{%  static 'images/custom/raindrop.png' %}" alt="">
-                                    <div class="da-overlay">
-                                        <div class="da-social">
-                                            <ul class="clearfix">
-                                                <li><a href="#"><i class="fa fa-calculator"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                        <div class="da-card-content">
+                            <p class="h5 mb-5" style="font-size: smaller">열관류율계산기(KS)</p>
+                            <p class="mb-0">Lorem ipsum dolor sit amet</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="da-card">
+                        <div class="da-card-photo">
+                            <img src="{% static 'images/custom/raindrop.png' %}" alt="">
+                            <div class="da-overlay">
+                                <div class="da-social">
+                                    <ul class="clearfix">
+                                        <li><a href="#"><i class="fa fa-calculator"></i></a></li>
+                                    </ul>
                                 </div>
-                                <div class="da-card-content">
-                                    <p class="h5 mb-5" style="font-size: smaller">빗물관리시설계산기</p>
-                                    <p class="mb-0">Lorem ipsum dolor sit amet</p>
-                                </div>
+                            </div>
+                        </div>
+                        <div class="da-card-content">
+                            <p class="h5 mb-5" style="font-size: smaller">빗물관리시설계산기</p>
+                            <p class="mb-0">Lorem ipsum dolor sit amet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Fade-in effect -->
+        </div>
+        <div class="col-md-6 col-lg-5">
+            <div class="login-box bg-white box-shadow border-radius-10">
+                <div class="login-title">
+                    <h2 class="text-center text-primary">Login</h2>
+                </div>
+                <form id="signinForm" name="signinForm" class="post-form">{% csrf_token %}
+                    <div class="input-group custom">
+                        <input type="text" class="form-control form-control-lg" placeholder="Username"
+                               name="username" id="username"
+                               value="{{ form.username.value|default_if_none:'' }}">
+                        <div class="input-group-append custom">
+                            <span class="input-group-text"><i class="icon-copy dw dw-user1"></i></span>
+                        </div>
+                    </div>
+                    <div class="input-group custom">
+                        <input type="password" class="form-control form-control-lg" placeholder="password"
+                               name="password" id="password"
+                               value="{{ form.password.value|default_if_none:'' }}">
+                        <div class="input-group-append custom">
+                            <span class="input-group-text"><i class="dw dw-padlock1"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="row pb-30">
+                        <div class="col-12">
+                            <p id="signinResult" style="color: #b21f2d"></p>
+                        </div>
+                        <!--
+                       <div class="col-6">
+                           <div class="custom-control custom-checkbox">
+                               <input type="checkbox" class="custom-control-input" id="customCheck1">
+                               <label class="custom-control-label" for="customCheck1">Remember</label>
+                           </div>
+                       </div>
+                       <div class="col-6">
+                           <div class="forgot-password"><a href="forgot-password.html">Forgot Password</a></div>
+                       </div>
+                       -->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-group mb-0">
+                                <input id="signinBtn" class="btn btn-primary btn-lg btn-block"
+                                       onclick="signin()" value="Sign In">
+                            </div>
+                            <div class="font-16 weight-600 pt-10 pb-10 text-center"></div>
+                            <div class="input-group mb-0">
+                                <a class="btn btn-outline-primary btn-lg btn-block" href="#">Register To
+                                    Create Account</a>
                             </div>
                         </div>
                     </div>
-                    <!-- End Fade-in effect -->
-				</div>
-				<div class="col-md-6 col-lg-5">
-					<div class="login-box bg-white box-shadow border-radius-10">
-						<div class="login-title">
-							<h2 class="text-center text-primary">Login</h2>
-						</div>
-						<form id="signinForm" name="signinForm" class="post-form">{% csrf_token %}
-							<!--
-                            <div class="select-role">
-								<div class="btn-group btn-group-toggle" data-toggle="buttons">
-									<label class="btn active">
-										<input type="radio" name="options" id="admin">
-										<div class="icon"><img src="{%  static 'images/briefcase.svg' %}" class="svg" alt=""></div>
-										<span>I'm</span>
-										Manager
-									</label>
-									<label class="btn">
-										<input type="radio" name="options" id="user">
-										<div class="icon"><img src="{%  static 'images/person.svg' %}" class="svg" alt=""></div>
-										<span>I'm</span>
-										Employee
-									</label>
-								</div>
-							</div>
-							-->
-                            <div class="input-group custom">
-                                <input type="text" class="form-control form-control-lg" placeholder="Username" name="username" id="username"
-                                value="{{ form.username.value|default_if_none:'' }}">
-                                <div class="input-group-append custom">
-                                    <span class="input-group-text"><i class="icon-copy dw dw-user1"></i></span>
-                                </div>
-                            </div>
-                            <div class="input-group custom">
-                                <input type="password" class="form-control form-control-lg" placeholder="password" name="password" id="password"
-                                 value="{{ form.password.value|default_if_none:'' }}">
-                                <div class="input-group-append custom">
-                                    <span class="input-group-text"><i class="dw dw-padlock1"></i></span>
-                                </div>
-                            </div>
-
-							<div class="row pb-30">
-                                <div  class="col-12">
-                                    <p id="signinResult" style="color: #b21f2d"></p>
-                                </div>
-                                 <!--
-								<div class="col-6">
-									<div class="custom-control custom-checkbox">
-										<input type="checkbox" class="custom-control-input" id="customCheck1">
-										<label class="custom-control-label" for="customCheck1">Remember</label>
-									</div>
-								</div>
-								<div class="col-6">
-									<div class="forgot-password"><a href="forgot-password.html">Forgot Password</a></div>
-								</div>
-								-->
-							</div>
-							<div class="row">
-								<div class="col-sm-12">
-									<div class="input-group mb-0">
-										<input id="signinBtn" class="btn btn-primary btn-lg btn-block" onclick="signin()" value="Sign In">
-									</div>
-									<div class="font-16 weight-600 pt-10 pb-10 text-center"></div>
-									<div class="input-group mb-0">
-										<a class="btn btn-outline-primary btn-lg btn-block" href="#">Register To Create Account</a>
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- js -->
-	<script src="{%  static 'scripts/core.js' %}"></script>
-	<script src="{%  static 'scripts/script.min.js' %}"></script>
-	<script src="{%  static 'scripts/process.js' %}"></script>
-	<script src="{%  static 'scripts/layout-settings.js' %}"></script>
-</body>
-</html>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- js -->
+    <script src="{% static 'scripts/core.js' %}"></script>
+    <script src="{% static 'scripts/script.min.js' %}"></script>
+    <script src="{% static 'scripts/process.js' %}"></script>
+    <script src="{% static 'scripts/layout-settings.js' %}"></script>
+    <script>
+        function signin() {
+            var formData = $('#signinForm').serialize();
+            console.log(formData);
+            $.ajax({
+                cache: false,
+                url: "signin/",
+                type: 'POST',
+                async: false,
+                data: formData,
+                success: function (data) {
+                    if (data.result) {
+                        window.location.href = "calcs/"
+                    } else {
+                        $('#signinResult').text(data.message);
+                    }
+                },
+                error: function (xhr, status,) {
+                    $('#signinResult').text("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
+                },
+            });
+        };
+    </script>
+{% endblock %}

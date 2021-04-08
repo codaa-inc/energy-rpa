@@ -8,11 +8,21 @@ let heatTransCoArr = new Array();           // 열관류율기준
 let avgHeatTransCoArr = new Array();        // 평균열관류율기준
 let localeEpiArr = new Array();             // 지자체배점
 let slabHeatResistanceArr = new Array();    // 슬라브상부단열기준
+let isUserCalc = false;                     // true = 저장된 값을 불러오는 계산기, false = 기본 계산기
 
 /**
 * 페이지 로딩 시 JSON 데이터를 호출하는 함수
 */
-fetch('/calcs/uvalue/data').then((response) => response.json()).then((json) => initSet(json));
+fetch('/calcs/uvalue/initdata').then((response) => response.json()).then((json) => initSet(json));
+
+
+function setUserData(userData) {
+    isUserCalc = true;  // 저장된 계산기 데이터를 불러온 경우
+
+    /** TODO : 컬럼에 구군선택 추가, 조건 select disabled, 저장된 데이터 뿌리는 로직 추가
+     *      OR choiceField 방식으로 전체 변경 고민
+     * */
+}
 
 /**
  * 초기 데이터를 셋팅하는 함수
@@ -269,67 +279,119 @@ function onclickSave() {
 * 초기 데이터 셋팅 함수
 */
 function setInitValue() {
-    // 외벽 default 값
-    $("#wall-direct-kind-1 option:eq(1)").prop("selected", "selected");
-    $("#wall-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-    $("#wall-direct-kind-2 option:eq(1)").prop("selected", "selected");
-    $("#wall-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-    $('#wall-direct-thick-2 option:eq(11)').prop("selected", "selected");
-    $('#wall-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-    $("#wall-direct-kind-3 option:eq(1)").prop("selected", "selected");
-    $("#wall-indirect-kind-3 option:eq(1)").prop("selected", "selected");
-    $('#wall-direct-thick-3 option:eq(22)').prop("selected", "selected");
-    $('#wall-indirect-thick-3 option:eq(22)').prop("selected", "selected");
-    $("#wall-direct-kind-4 option:eq(1)").prop("selected", "selected");
-    $("#wall-indirect-kind-4 option:eq(1)").prop("selected", "selected");
-
-    // 창호 default 값
-    $('#win-direct-kind-1 option:eq(1)').prop("selected", "selected");
-    $('#win-indirect-kind-1 option:eq(1)').prop("selected", "selected");
-
-    // 지붕 default 값
-    $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
-    $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-
-    $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
-    $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-    $('#roof-direct-thick-1 option:eq(11)').prop("selected", "selected");
-    $('#roof-indirect-thick-1 option:eq(11)').prop("selected", "selected");
-    $("#roof-direct-kind-2 option:eq(1)").prop("selected", "selected");
-    $("#roof-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-    $('#roof-direct-thick-2 option:eq(11)').prop("selected", "selected");
-    $('#roof-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-
-
-    // 비난방바닥 default 값
-    $("#floorb-direct-kind-1 option:eq(1)").prop("selected", "selected");
-    $("#floorb-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-    $('#floorb-direct-thick-1 option:eq(11)').prop("selected", "selected");
-    $('#floorb-indirect-thick-1 option:eq(11)').prop("selected", "selected");
-    $("#floorb-direct-kind-2 option:eq(1)").prop("selected", "selected");
-    $("#floorb-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-    $('#floorb-direct-thick-2 option:eq(11)').prop("selected", "selected");
-    $('#floorb-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-
-    // 난방바닥 default 값
-    $('#floor-direct-thick-1 option:eq(3)').prop("selected", "selected");
-    $('#floor-indirect-thick-1 option:eq(3)').prop("selected", "selected");
-    $('#floor-direct-kind-2 option:eq(1)').prop("selected", "selected");
-    $('#floor-indirect-kind-2 option:eq(1)').prop("selected", "selected");
-    $('#floor-direct-thick-2 option:eq(17)').prop("selected", "selected");
-    $('#floor-indirect-thick-2 option:eq(17)').prop("selected", "selected");
-    $('#floor-direct-kind-3 option:eq(1)').prop("selected", "selected");
-    $('#floor-indirect-kind-3 option:eq(1)').prop("selected", "selected");
-    $('#floor-direct-thick-3 option:eq(11)').prop("selected", "selected");
-    $('#floor-indirect-thick-3 option:eq(11)').prop("selected", "selected");
-    $("#floor-direct-kind-4 option:eq(1)").prop("selected", "selected");
-    $("#floor-indirect-kind-4 option:eq(1)").prop("selected", "selected");
-    $('#floor-direct-thick-4 option:eq(11)').prop("selected", "selected");
-    $('#floor-indirect-thick-4 option:eq(11)').prop("selected", "selected");
-    $('#floor-direct-kind-5 option:eq(1)').prop("selected", "selected");
-    $('#floor-indirect-kind-5 option:eq(1)').prop("selected", "selected");
-    $('#floor-direct-thick-5 option:eq(11)').prop("selected", "selected");
-    $('#floor-indirect-thick-5 option:eq(11)').prop("selected", "selected");
+    if(!isUserCalc) {
+        // 외벽 default 값
+        $("#wall-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#wall-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#wall-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#wall-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        $("#wall-direct-kind-3 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-3 option:eq(1)").prop("selected", "selected");
+        $('#wall-direct-thick-3 option:eq(22)').prop("selected", "selected");
+        $('#wall-indirect-thick-3 option:eq(22)').prop("selected", "selected");
+        $("#wall-direct-kind-4 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-4 option:eq(1)").prop("selected", "selected");
+        // 창호 default 값
+        $('#win-direct-kind-1 option:eq(1)').prop("selected", "selected");
+        $('#win-indirect-kind-1 option:eq(1)').prop("selected", "selected");
+        // 지붕 default 값
+        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $('#roof-direct-thick-1 option:eq(11)').prop("selected", "selected");
+        $('#roof-indirect-thick-1 option:eq(11)').prop("selected", "selected");
+        $("#roof-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#roof-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#roof-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        // 비난방바닥 default 값
+        $("#floorb-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#floorb-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $('#floorb-direct-thick-1 option:eq(11)').prop("selected", "selected");
+        $('#floorb-indirect-thick-1 option:eq(11)').prop("selected", "selected");
+        $("#floorb-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#floorb-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#floorb-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#floorb-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        // 난방바닥 default 값
+        $('#floor-direct-thick-1 option:eq(3)').prop("selected", "selected");
+        $('#floor-indirect-thick-1 option:eq(3)').prop("selected", "selected");
+        $('#floor-direct-kind-2 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-2 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-2 option:eq(17)').prop("selected", "selected");
+        $('#floor-indirect-thick-2 option:eq(17)').prop("selected", "selected");
+        $('#floor-direct-kind-3 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-3 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-3 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-3 option:eq(11)').prop("selected", "selected");
+        $("#floor-direct-kind-4 option:eq(1)").prop("selected", "selected");
+        $("#floor-indirect-kind-4 option:eq(1)").prop("selected", "selected");
+        $('#floor-direct-thick-4 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-4 option:eq(11)').prop("selected", "selected");
+        $('#floor-direct-kind-5 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-5 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-5 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-5 option:eq(11)').prop("selected", "selected");
+    } else {
+        // 외벽 default 값
+        $("#wall-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#wall-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#wall-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#wall-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        $("#wall-direct-kind-3 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-3 option:eq(1)").prop("selected", "selected");
+        $('#wall-direct-thick-3 option:eq(22)').prop("selected", "selected");
+        $('#wall-indirect-thick-3 option:eq(22)').prop("selected", "selected");
+        $("#wall-direct-kind-4 option:eq(1)").prop("selected", "selected");
+        $("#wall-indirect-kind-4 option:eq(1)").prop("selected", "selected");
+        // 창호 default 값
+        $('#win-direct-kind-1 option:eq(1)').prop("selected", "selected");
+        $('#win-indirect-kind-1 option:eq(1)').prop("selected", "selected");
+        // 지붕 default 값
+        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $('#roof-direct-thick-1 option:eq(11)').prop("selected", "selected");
+        $('#roof-indirect-thick-1 option:eq(11)').prop("selected", "selected");
+        $("#roof-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#roof-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#roof-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#roof-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        // 비난방바닥 default 값
+        $("#floorb-direct-kind-1 option:eq(1)").prop("selected", "selected");
+        $("#floorb-indirect-kind-1 option:eq(1)").prop("selected", "selected");
+        $('#floorb-direct-thick-1 option:eq(11)').prop("selected", "selected");
+        $('#floorb-indirect-thick-1 option:eq(11)').prop("selected", "selected");
+        $("#floorb-direct-kind-2 option:eq(1)").prop("selected", "selected");
+        $("#floorb-indirect-kind-2 option:eq(1)").prop("selected", "selected");
+        $('#floorb-direct-thick-2 option:eq(11)').prop("selected", "selected");
+        $('#floorb-indirect-thick-2 option:eq(11)').prop("selected", "selected");
+        // 난방바닥 default 값
+        $('#floor-direct-thick-1 option:eq(3)').prop("selected", "selected");
+        $('#floor-indirect-thick-1 option:eq(3)').prop("selected", "selected");
+        $('#floor-direct-kind-2 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-2 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-2 option:eq(17)').prop("selected", "selected");
+        $('#floor-indirect-thick-2 option:eq(17)').prop("selected", "selected");
+        $('#floor-direct-kind-3 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-3 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-3 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-3 option:eq(11)').prop("selected", "selected");
+        $("#floor-direct-kind-4 option:eq(1)").prop("selected", "selected");
+        $("#floor-indirect-kind-4 option:eq(1)").prop("selected", "selected");
+        $('#floor-direct-thick-4 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-4 option:eq(11)').prop("selected", "selected");
+        $('#floor-direct-kind-5 option:eq(1)').prop("selected", "selected");
+        $('#floor-indirect-kind-5 option:eq(1)').prop("selected", "selected");
+        $('#floor-direct-thick-5 option:eq(11)').prop("selected", "selected");
+        $('#floor-indirect-thick-5 option:eq(11)').prop("selected", "selected");
+    }
 
     // 열관류율, 평균열관류율 셋팅
     const heatArr = ['wall-direct', 'wall-indirect', 'win-direct', 'win-indirect',
@@ -975,7 +1037,7 @@ $('document').ready(function () {
 
         // 2 Depth : 경기,강원,충북,경북,경남
         if (idx == 9 || idx == 10 || idx == 11 || idx == 15 || idx == 16) {
-            $('.header-right').css('width', '75%');       // 헤더 영역 확보
+            //$('.header-right').css('width', '75%');       // 헤더 영역 확보
             $gugun.children('option:not(:first)').remove();     // 구군 콤보박스 초기화
             $gugun.css("display", "");                    // 구군 콤보박스 toggle
             $gugun.append("<option value='0' selected disabled hidden>구/군 선택</option>");

@@ -1,47 +1,37 @@
-{% load static  %}
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html">
-<head>
-    <!-- Basic Page Info -->
-    <meta charset="utf-8">
-    <title>열관류율 계산기</title>
-
-    <!-- Site favicon -->
-    <link href="{% static 'images/custom/favicon.ico' %}" rel="icon" sizes="16x16" type="image/png">
-
-    <!-- Mobile Specific Metas -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
-    <link href="{%  static 'styles/core.css' %}" rel="stylesheet" type="text/css">
-    <link href="{%  static 'styles/icon-font.min.css' %}" rel="stylesheet" type="text/css">
-    <link href="{%  static 'styles/style.css' %}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
-    <style> *{font-family: 'NanumSquare', sans-serif !important; }</style>
-
-    <!-- jquery 3.2.1 -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-    <!-- 커스텀 함수 -->
-    <script src="{%  static 'scripts/custom/01_uvalue_calc.js' %}"></script>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="main-container">
+<script>
+    // template id가 넘어온 경우 저장된 계산기를 불러온다.
+    {% if id %}
+        $.ajax({
+            cache : false,
+            url : 'data/' + {{ id | escapejs }},
+            type : 'POST',
+            async: false,
+            data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+            success : function(data) {
+                let jsonString = ((JSON.parse(JSON.stringify(data.calc).replace(/(\s*)/g, "")).split("fields")[1]).slice(3)).slice(0, -3);
+                setUserData(jsonString);
+            },
+            error : function(xhr, status) {
+            }
+        });
+    {% endif %}
+</script>
     <form id="template" name="template">{% csrf_token %}
         <input name="username" style="visibility: hidden;" value="{{ request.session.username }}">
-        <div id="header" class="header" style="position : relative; margin-right: -70px; width: 100%;">
-            <div class="header-left" style="width:25%">
+        <div style="position : relative; margin-right: -70px; width: 100%;">
+            <div class="header-left">
                 <div class="col-md-12 col-sm-12">
                     <div class="title" style="display: inline-block">
-                        <div class="menu-icon dw dw-menu" style="display: inline-block"></div>
-                        <h5 style="display: inline-block">열관류율 계산기(KS)</h5>
+                        <h5 style="display: inline-block; margin-left: 20px;">열관류율 계산기(KS)</h5>
                     </div>
                 </div>
             </div>
-            <div class="header-right" style="width: 65%">
-                <div class="row" style="margin: auto;">
+            <div class="header-right" style="width: 80%; margin-left: 20px;">
+                <div style="margin: auto;">
                     <label style="display : inline-block; margin-top: 10px; margin-right: 5px; font-weight: bold">지역구분</label>
                     <div style="display : inline-block;">
                         <select class="custom-select" id="sido1" name="sido1"></select>
@@ -67,35 +57,6 @@
                        style="margin-left: 10px; margin-top: 10px; cursor: pointer;">&nbsp;초기화</i>
                 </div>
             </div>
-            <!--
-            <div class="left-side-bar">
-                <div class="brand-logo">
-                    <a href="#">
-                        <img src="{%  static 'images/custom/codaa_logo.png' %}" alt="" class="light-logo">
-                    </a>
-                    <div class="close-sidebar" data-toggle="left-sidebar-close">
-                        <i class="ion-close-round"></i>
-                    </div>
-                </div>
-
-                <div class="menu-block customscroll">
-                    <div class="sidebar-menu">
-                        <ul id="accordion-menu">
-                            <li class="dropdown">
-                                <a href="javascript:;" class="dropdown-toggle">
-                                    <span class=""></span><span class="mtext">Calculator</span>
-                                </a>
-                                <ul class="submenu">
-                                    <li><a href="">열관류율 계산기(KS)</a></li>
-                                    <li><a href="#">빗물관리시설 설계 계산기</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="mobile-menu-overlay"></div>
-            -->
         </div>
         <div class="main-container" style="padding: 0px;">
             <div class="pd-ltr-20 xs-pd-20-10" style="padding: 10px;">
@@ -103,7 +64,8 @@
                     <div id="page-header" class="page-header"
                          style="font-size : 0.8rem; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
                         <div class="row">
-                            <p class="mb-5" style="text-align: left; margin-left: 20px;">* 에너지 절약 설계기준 국토부 고시 제2017-881호 적용 | 지역별 녹색건축설계기준 고려한 평균열관류율 기준 적용 | 표면 열전달 저항값 자동 계산됨 | 창호열관류율은 제조사의 시험성적서 값을 임의적용 함.
+                            <p class="mb-5" style="text-align: left; margin-left: 20px;">* 에너지 절약 설계기준 국토부 고시 제2017-881호
+                                적용 | 지역별 녹색건축설계기준 고려한 평균열관류율 기준 적용 | 표면 열전달 저항값 자동 계산됨 | 창호열관류율은 제조사의 시험성적서 값을 임의적용 함.
                                 <br>* 본 계산기는 3,000m2 이하 중소규모 건축물 검토에 적합함. 녹색건축물 기준 검토 및 계산기 관련 문의는 info@codaa.kr 로 연락.
                             </p>
                             <div style="display : none; margin-left: auto; margin-right: 20px;">
@@ -122,29 +84,36 @@
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">외벽(직접)</p>
                                 </div>
-                                <div id="wall-direct-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
-                                        <p style="display: inline-block;">적용 열관류율 </p>
-                                        <p style="display: inline-block; font-weight: bolder" id="wall-direct-trans"></p>
-                                        <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                        <p id="wall-direct-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                        <p id="wall-direct-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                <div id="wall-direct-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
+                                    <p style="display: inline-block;">적용 열관류율 </p>
+                                    <p style="display: inline-block; font-weight: bolder" id="wall-direct-trans"></p>
+                                    <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
+                                    <p id="wall-direct-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="wall-direct-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">외벽(간접)</p>
                                 </div>
-                                <div id="wall-indirect-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
+                                <div id="wall-indirect-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
                                     <p style="display: inline-block;">적용 열관류율 </p>
                                     <p style="display: inline-block; font-weight: bolder" id="wall-indirect-trans"></p>
                                     <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                    <p id="wall-indirect-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                    <p id="wall-indirect-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                    <p id="wall-indirect-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="wall-indirect-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                             </div>
                             <div name="wall" style="margin-top: 20px;">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" id="wall-direct-kind-1" name="wall_direct_kind_1"
+                                            <select class="custom-select" id="wall-direct-kind-1"
+                                                    name="wall_direct_kind_1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>외부마감재 종류</option>
                                             </select>
@@ -153,7 +122,8 @@
 
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" disabled id="wall-direct-thick-1" name="wall_direct_thick_1">
+                                            <select class="custom-select" disabled id="wall-direct-thick-1"
+                                                    name="wall_direct_thick_1">
                                                 <option disabled hidden selected>외부마감재 두께</option>
                                                 <option value="0">0</option>
                                                 <option value="20">20</option>
@@ -166,12 +136,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="wall_direct_width" id="wall-direct-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="75">
+                                        <input class="form-control" name="wall_direct_width" id="wall-direct-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="75">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_kind_1" id="wall-indirect-kind-1"
+                                            <select class="custom-select" name="wall_indirect_kind_1"
+                                                    id="wall-indirect-kind-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>외부마감재 종류</option>
                                             </select>
@@ -179,7 +152,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" disabled name="wall_indirect_thick_1" id="wall-indirect-thick-1">
+                                            <select class="custom-select" disabled name="wall_indirect_thick_1"
+                                                    id="wall-indirect-thick-1">
                                                 <option disabled hidden selected>외부마감재 두께</option>
                                                 <option value="0">0</option>
                                                 <option value="20">20</option>
@@ -192,23 +166,27 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="wall_indirect_width" id="wall-indirect-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" name="wall_indirect_width" id="wall-indirect-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_kind_2" id="wall-direct-kind-2"
+                                            <select class="custom-select" name="wall_direct_kind_2"
+                                                    id="wall-direct-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                                 {% for i in insulm %}
-                                                <option value="{{ i.cvalue }}">{{ i.insulm_nm }}</option>
+                                                    <option value="{{ i.cvalue }}">{{ i.insulm_nm }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_thick_2" id="wall-direct-thick-2"
+                                            <select class="custom-select" name="wall_direct_thick_2"
+                                                    id="wall-direct-thick-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -217,7 +195,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_kind_2" id="wall-indirect-kind-2"
+                                            <select class="custom-select" name="wall_indirect_kind_2"
+                                                    id="wall-indirect-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -225,7 +204,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_thick_2" id="wall-indirect-thick-2"
+                                            <select class="custom-select" name="wall_indirect_thick_2"
+                                                    id="wall-indirect-thick-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -234,7 +214,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_kind_3" id="wall-direct-kind-3"
+                                            <select class="custom-select" name="wall_direct_kind_3"
+                                                    id="wall-direct-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 재료</option>
                                             </select>
@@ -242,7 +223,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_thick_3" id="wall-direct-thick-3"
+                                            <select class="custom-select" name="wall_direct_thick_3"
+                                                    id="wall-direct-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 두께</option>
                                             </select>
@@ -251,7 +233,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_kind_3" id="wall-indirect-kind-3"
+                                            <select class="custom-select" name="wall_indirect_kind_3"
+                                                    id="wall-indirect-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 재료</option>
                                             </select>
@@ -259,7 +242,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_thick_3" id="wall-indirect-thick-3"
+                                            <select class="custom-select" name="wall_indirect_thick_3"
+                                                    id="wall-indirect-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 두께</option>
                                             </select>
@@ -268,7 +252,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_kind_4" id="wall-direct-kind-4"
+                                            <select class="custom-select" name="wall_direct_kind_4"
+                                                    id="wall-direct-kind-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -276,7 +261,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_direct_thick_4" id="wall-direct-thick-4"
+                                            <select class="custom-select" name="wall_direct_thick_4"
+                                                    id="wall-direct-thick-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -285,7 +271,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_kind_4" id="wall-indirect-kind-4"
+                                            <select class="custom-select" name="wall_indirect_kind_4"
+                                                    id="wall-indirect-kind-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -293,7 +280,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="wall_indirect_thick_4" id="wall-indirect-thick-4"
+                                            <select class="custom-select" name="wall_indirect_thick_4"
+                                                    id="wall-indirect-thick-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -311,29 +299,36 @@
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">창호(직접)</p>
                                 </div>
-                                <div id="win-direct-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
-                                        <p style="display: inline-block;">적용 열관류율 </p>
-                                        <p style="display: inline-block; font-weight: bolder" id="win-direct-trans"></p>
-                                        <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                        <p id="win-direct-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                        <p id="win-direct-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                <div id="win-direct-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
+                                    <p style="display: inline-block;">적용 열관류율 </p>
+                                    <p style="display: inline-block; font-weight: bolder" id="win-direct-trans"></p>
+                                    <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
+                                    <p id="win-direct-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="win-direct-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">창호(간접)</p>
                                 </div>
-                                <div id="win-indirect-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
+                                <div id="win-indirect-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
                                     <p style="display: inline-block;">적용 열관류율 </p>
                                     <p style="display: inline-block; font-weight: bolder" id="win-indirect-trans"></p>
                                     <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                    <p id="win-indirect-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                    <p id="win-indirect-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                    <p id="win-indirect-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="win-indirect-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                             </div>
                             <div name="win" style="margin-top: 20px;">
                                 <div class="row">
                                     <div class="col-md-4 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="win_direct_kind_1" id="win-direct-kind-1"
+                                            <select class="custom-select" name="win_direct_kind_1"
+                                                    id="win-direct-kind-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>창호 종류</option>
                                             </select>
@@ -341,7 +336,9 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="win_direct_width" id="win-direct-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="25">
+                                        <input class="form-control" name="win_direct_width" id="win-direct-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="25">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-4 col-sm-12">
@@ -354,7 +351,9 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="win_indirect_width" id="win-indirect-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" name="win_indirect_width" id="win-indirect-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                 </div>
@@ -363,15 +362,17 @@
                         <!-- End of 창호 form  -->
                         <!-- Start of 외벽평균열관류율-->
                         <div id="wall-avg-header" class="clearfix" style="background-color : #F7DC6F; display: none;">
-                            <div class="col-md-12 col-sm-12" style="display : inline-block; text-align: right; text-align: center">
+                            <div class="col-md-12 col-sm-12"
+                                 style="display : inline-block; text-align: right; text-align: center">
                                 <h5 class="text h5" style="display: inline-block;">외벽평균열관류율</h5>
                                 <p id="wall-width-ratio" style="display: inline-block;"></p>
                                 <p id="wall-avg-trans" style="display: inline-block; font-weight: bolder"></p>
                                 <p style="display: inline-block">W/㎡k : </p>
                                 <p id="wall-avg-point" style="display: inline-block;"></p>
                                 <p id="wall-avg-locale" style="display: inline-block; font-weight: bolder;"></p>
-                                <p id="wall-avg-result-1" style="display: inline-block;">W/㎡k  이하를 </p>
-                                <p id="wall-avg-result" style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
+                                <p id="wall-avg-result-1" style="display: inline-block;">W/㎡k 이하를 </p>
+                                <p id="wall-avg-result"
+                                   style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
                             </div>
                         </div>
                         <!-- End of 외벽평균열관류율-->
@@ -385,29 +386,36 @@
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최상층지붕(직접)</p>
                                 </div>
-                                <div id="roof-direct-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
-                                        <p style="display: inline-block;">적용 열관류율 </p>
-                                        <p style="display: inline-block; font-weight: bolder" id="roof-direct-trans"></p>
-                                        <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                        <p id="roof-direct-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                        <p id="roof-direct-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                <div id="roof-direct-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
+                                    <p style="display: inline-block;">적용 열관류율 </p>
+                                    <p style="display: inline-block; font-weight: bolder" id="roof-direct-trans"></p>
+                                    <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
+                                    <p id="roof-direct-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="roof-direct-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최상층지붕(간접)</p>
                                 </div>
-                                <div id="roof-indirect-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
+                                <div id="roof-indirect-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
                                     <p style="display: inline-block;">적용 열관류율 </p>
                                     <p style="display: inline-block; font-weight: bolder" id="roof-indirect-trans"></p>
                                     <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                    <p id="roof-indirect-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                    <p id="roof-indirect-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                    <p id="roof-indirect-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="roof-indirect-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                             </div>
                             <div name="roof" style="margin-top: 20px;">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_kind_1" id="roof-direct-kind-1"
+                                            <select class="custom-select" name="roof_direct_kind_1"
+                                                    id="roof-direct-kind-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>외부마감재 종류</option>
                                             </select>
@@ -415,7 +423,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_thick_1" disabled id="roof-direct-thick-1" >
+                                            <select class="custom-select" name="roof_direct_thick_1" disabled
+                                                    id="roof-direct-thick-1">
                                                 <option disabled hidden selected>외부마감재 두께</option>
                                                 <option value="0">0</option>
                                                 <option value="20">20</option>
@@ -428,12 +437,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" id="roof-direct-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="100">
+                                        <input class="form-control" id="roof-direct-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="100">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_indirect_kind_1" id="roof-indirect-kind-1"
+                                            <select class="custom-select" name="roof_indirect_kind_1"
+                                                    id="roof-indirect-kind-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>외부마감재 종류</option>
                                             </select>
@@ -441,7 +453,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" disabled name="roof_indirect_thick_1" id="roof-indirect-thick-1">
+                                            <select class="custom-select" disabled name="roof_indirect_thick_1"
+                                                    id="roof-indirect-thick-1">
                                                 <option disabled hidden selected>외부마감재 두께</option>
                                                 <option value="0">0</option>
                                                 <option value="20">20</option>
@@ -454,12 +467,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" id="roof-indirect-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" id="roof-indirect-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_kind_2" id="roof-direct-kind-2"
+                                            <select class="custom-select" name="roof_direct_kind_2"
+                                                    id="roof-direct-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 재료</option>
                                             </select>
@@ -467,7 +483,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_thick_2" id="roof-direct-thick-2"
+                                            <select class="custom-select" name="roof_direct_thick_2"
+                                                    id="roof-direct-thick-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 두께</option>
                                             </select>
@@ -476,7 +493,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_indirect_kind_2" id="roof-indirect-kind-2"
+                                            <select class="custom-select" name="roof_indirect_kind_2"
+                                                    id="roof-indirect-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 재료</option>
                                             </select>
@@ -484,7 +502,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_indirect_thick_2" id="roof-indirect-thick-2"
+                                            <select class="custom-select" name="roof_indirect_thick_2"
+                                                    id="roof-indirect-thick-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>구조 두께</option>
                                             </select>
@@ -493,7 +512,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_kind_3" id="roof-direct-kind-3"
+                                            <select class="custom-select" name="roof_direct_kind_3"
+                                                    id="roof-direct-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -501,7 +521,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_direct_thick_3" id="roof-direct-thick-3"
+                                            <select class="custom-select" name="roof_direct_thick_3"
+                                                    id="roof-direct-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -510,7 +531,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_indirect_kind_3" id="roof-indirect-kind-3"
+                                            <select class="custom-select" name="roof_indirect_kind_3"
+                                                    id="roof-indirect-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -518,7 +540,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="roof_indirect_thick_3" id="roof-indirect-thick-3"
+                                            <select class="custom-select" name="roof_indirect_thick_3"
+                                                    id="roof-indirect-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -530,14 +553,16 @@
                         </div>
                         <!-- Start of 지붕평균열관류율-->
                         <div id="roof-avg-header" class="clearfix" style="background-color : #F7DC6F; display: none;">
-                            <div class="col-md-12 col-sm-12" style="display : inline-block; text-align: right; text-align: center">
+                            <div class="col-md-12 col-sm-12"
+                                 style="display : inline-block; text-align: right; text-align: center">
                                 <h5 class="text h5" style="display: inline-block;">지붕평균열관류율</h5>
                                 <p id="roof-avg-trans" style="display: inline-block; font-weight: bolder"></p>
                                 <p style="display: inline-block">W/㎡k : </p>
                                 <p id="roof-avg-point" style="display: inline-block;"></p>
                                 <p id="roof-avg-locale" style="display: inline-block; font-weight: bolder;"></p>
-                                <p id="roof-avg-result-1" style="display: inline-block;">W/㎡k  이하를 </p>
-                                <p id="roof-avg-result" style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
+                                <p id="roof-avg-result-1" style="display: inline-block;">W/㎡k 이하를 </p>
+                                <p id="roof-avg-result"
+                                   style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
                             </div>
                         </div>
                         <!-- End of 지붕평균열관류율-->
@@ -552,29 +577,37 @@
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최하층바닥(직접)</p>
                                 </div>
-                                <div id="floorb-direct-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
-                                        <p style="display: inline-block;">적용 열관류율 </p>
-                                        <p style="display: inline-block; font-weight: bolder" id="floorb-direct-trans"></p>
-                                        <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                        <p id="floorb-direct-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                        <p id="floorb-direct-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                <div id="floorb-direct-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
+                                    <p style="display: inline-block;">적용 열관류율 </p>
+                                    <p style="display: inline-block; font-weight: bolder" id="floorb-direct-trans"></p>
+                                    <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
+                                    <p id="floorb-direct-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="floorb-direct-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최하층바닥(간접)</p>
                                 </div>
-                                <div id="floorb-indirect-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
+                                <div id="floorb-indirect-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
                                     <p style="display: inline-block;">적용 열관류율 </p>
-                                    <p style="display: inline-block; font-weight: bolder" id="floorb-indirect-trans"></p>
+                                    <p style="display: inline-block; font-weight: bolder"
+                                       id="floorb-indirect-trans"></p>
                                     <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                    <p id="floorb-indirect-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                    <p id="floorb-indirect-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                    <p id="floorb-indirect-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="floorb-indirect-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                             </div>
                             <div name="floorb" style="margin-top: 20px;">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_direct_kind_1" id="floorb-direct-kind-1" disabled>
+                                            <select class="custom-select" name="floorb_direct_kind_1"
+                                                    id="floorb-direct-kind-1" disabled>
                                                 <option disabled hidden selected>바닥슬라브</option>
                                                 <option value="1.6">콘크리트 구조</option>
                                             </select>
@@ -582,7 +615,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_direct_thick_1" id="floorb-direct-thick-1"
+                                            <select class="custom-select" name="floorb_direct_thick_1"
+                                                    id="floorb-direct-thick-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>슬라브 두께</option>
                                             </select>
@@ -590,12 +624,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="floorb_direct_width" id="floorb-direct-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="100">
+                                        <input class="form-control" name="floorb_direct_width" id="floorb-direct-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="100">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_indirect_kind_1" id="floorb-indirect-kind-1" disabled>
+                                            <select class="custom-select" name="floorb_indirect_kind_1"
+                                                    id="floorb-indirect-kind-1" disabled>
                                                 <option disabled hidden selected>바닥슬라브</option>
                                                 <option value="1.6">콘크리트 구조</option>
                                             </select>
@@ -603,7 +640,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_indirect_thick_1" id="floorb-indirect-thick-1"
+                                            <select class="custom-select" name="floorb_indirect_thick_1"
+                                                    id="floorb-indirect-thick-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>슬라브 두께</option>
                                             </select>
@@ -611,12 +649,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="floorb_indirect_width" id="floorb-indirect-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" name="floorb_indirect_width"
+                                               id="floorb-indirect-width" onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_direct_kind_2" id="floorb-direct-kind-2"
+                                            <select class="custom-select" name="floorb_direct_kind_2"
+                                                    id="floorb-direct-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -624,7 +665,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_direct_thick_2" id="floorb-direct-thick-2" onchange="onchangeCombobox(this.id)">
+                                            <select class="custom-select" name="floorb_direct_thick_2"
+                                                    id="floorb-direct-thick-2" onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
                                         </div>
@@ -632,7 +674,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_indirect_kind_2" id="floorb-indirect-kind-2"
+                                            <select class="custom-select" name="floorb_indirect_kind_2"
+                                                    id="floorb-indirect-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -640,7 +683,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floorb_indirect_thick_2" id="floorb-indirect-thick-2"
+                                            <select class="custom-select" name="floorb_indirect_thick_2"
+                                                    id="floorb-indirect-thick-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -658,36 +702,44 @@
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최하층바닥<br>(직접,바닥난방)</p>
                                 </div>
-                                <div id="floor-direct-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
-                                        <p style="display: inline-block;">적용 열관류율 </p>
-                                        <p style="display: inline-block; font-weight: bolder" id="floor-direct-trans"></p>
-                                        <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                        <p id="floor-direct-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                        <p id="floor-direct-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                <div id="floor-direct-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
+                                    <p style="display: inline-block;">적용 열관류율 </p>
+                                    <p style="display: inline-block; font-weight: bolder" id="floor-direct-trans"></p>
+                                    <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
+                                    <p id="floor-direct-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="floor-direct-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                                 <div class="col-md-2 col-sm-6" style="display : inline-block;">
                                     <p class="text h5" style="text-align: left;">최하층바닥<br>(간접,바닥난방)</p>
                                 </div>
-                                <div id="floor-indirect-header" class="col-md-4 col-sm-6" style="display : inline-block; visibility: hidden;">
+                                <div id="floor-indirect-header" class="col-md-4 col-sm-6"
+                                     style="display : inline-block; visibility: hidden;">
                                     <p style="display: inline-block;">적용 열관류율 </p>
                                     <p style="display: inline-block; font-weight: bolder" id="floor-indirect-trans"></p>
                                     <p style="display: inline-block;"> W/㎡k로 법적 기준</p>
-                                    <p id="floor-indirect-result" style=" display: inline-block;font-weight: bold; font-size: large;"></p>
-                                    <p id="floor-indirect-locale" style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
+                                    <p id="floor-indirect-result"
+                                       style=" display: inline-block;font-weight: bold; font-size: large;"></p>
+                                    <p id="floor-indirect-locale"
+                                       style="text-align: right; font-size: smaller; margin-right: 10%;"></p>
                                 </div>
                             </div>
                             <div name="floor" style="margin-top: 20px;">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_kind_1" id="floor-direct-kind-1" disabled>
+                                            <select class="custom-select" name="floor_direct_kind_1"
+                                                    id="floor-direct-kind-1" disabled>
                                                 <option value="1.4">바닥난방 없음</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_thick_1" id="floor-direct-thick-1"
+                                            <select class="custom-select" name="floor_direct_thick_1"
+                                                    id="floor-direct-thick-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>바닥난방 두께</option>
                                             </select>
@@ -695,19 +747,23 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="floor_direct_width" id="floor-direct-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" name="floor_direct_width" id="floor-direct-width"
+                                               onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_kind_1" id="floor-indirect-kind-1" disabled>
+                                            <select class="custom-select" name="floor_indirect_kind_1"
+                                                    id="floor-indirect-kind-1" disabled>
                                                 <option value="1.4">바닥난방 없음</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_thick_1" id="floor-indirect-thick-1"
+                                            <select class="custom-select" name="floor_indirect_thick_1"
+                                                    id="floor-indirect-thick-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>바닥난방 두께</option>
                                             </select>
@@ -715,12 +771,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" name="floor_indirect_width" id="floor-indirect-width" onchange="onchangeWidth(this.id)" style="width: 60%; display: inline-block;" type="number" value="0">
+                                        <input class="form-control" name="floor_indirect_width"
+                                               id="floor-indirect-width" onchange="onchangeWidth(this.id)"
+                                               style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_kind_2" id="floor-direct-kind-2"
+                                            <select class="custom-select" name="floor_direct_kind_2"
+                                                    id="floor-direct-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>기포콘크리트</option>
                                             </select>
@@ -728,7 +787,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_thick_2" id="floor-direct-thick-2"
+                                            <select class="custom-select" name="floor_direct_thick_2"
+                                                    id="floor-direct-thick-2"
                                                     onchange="onchangeCombobox(this.id)" disabled>
                                                 <option disabled hidden selected>기포콘크리트 두께</option>
                                             </select>
@@ -737,7 +797,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_kind_2" id="floor-indirect-kind-2"
+                                            <select class="custom-select" name="floor_indirect_kind_2"
+                                                    id="floor-indirect-kind-2"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>기포콘크리트</option>
                                             </select>
@@ -745,8 +806,9 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_thick_2" id="floor-indirect-thick-2"
-                                                onchange="onchangeCombobox(this.id)" disabled>
+                                            <select class="custom-select" name="floor_indirect_thick_2"
+                                                    id="floor-indirect-thick-2"
+                                                    onchange="onchangeCombobox(this.id)" disabled>
                                                 <option disabled hidden selected>기포콘크리트 두께</option>
                                             </select>
                                         </div>
@@ -754,7 +816,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_kind_3" id="floor-direct-kind-3"
+                                            <select class="custom-select" name="floor_direct_kind_3"
+                                                    id="floor-direct-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -762,7 +825,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_thick_3" id="floor-direct-thick-3"
+                                            <select class="custom-select" name="floor_direct_thick_3"
+                                                    id="floor-direct-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -770,11 +834,13 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p id="floor-direct-slab" style="font-size: smaller;"></p>
-                                        <p id="floor-direct-slab-result" style="font-size: smaller; font-weight: bold;"></p>
+                                        <p id="floor-direct-slab-result"
+                                           style="font-size: smaller; font-weight: bold;"></p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_kind_3" id="floor-indirect-kind-3"
+                                            <select class="custom-select" name="floor_indirect_kind_3"
+                                                    id="floor-indirect-kind-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -782,7 +848,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_thick_3" id="floor-indirect-thick-3"
+                                            <select class="custom-select" name="floor_indirect_thick_3"
+                                                    id="floor-indirect-thick-3"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -790,11 +857,13 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p id="floor-indirect-slab" style="font-size: smaller;"></p>
-                                        <p id="floor-indirect-slab-result" style="font-size: smaller; font-weight: bold;"></p>
+                                        <p id="floor-indirect-slab-result"
+                                           style="font-size: smaller; font-weight: bold;"></p>
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_kind_4" id="floor-direct-kind-4" disabled>
+                                            <select class="custom-select" name="floor_direct_kind_4"
+                                                    id="floor-direct-kind-4" disabled>
                                                 <option disabled hidden selected>바닥슬라브</option>
                                                 <option value="1.6">콘크리트 구조</option>
                                             </select>
@@ -802,7 +871,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_thick_4" id="floor-direct-thick-4"
+                                            <select class="custom-select" name="floor_direct_thick_4"
+                                                    id="floor-direct-thick-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>슬라브 두께</option>
                                             </select>
@@ -811,7 +881,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_kind_4" id="floor-indirect-kind-4" disabled>
+                                            <select class="custom-select" name="floor_indirect_kind_4"
+                                                    id="floor-indirect-kind-4" disabled>
                                                 <option disabled hidden selected>바닥슬라브</option>
                                                 <option value="1.6">콘크리트 구조</option>
                                             </select>
@@ -819,7 +890,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_thick_4" id="floor-indirect-thick-4"
+                                            <select class="custom-select" name="floor_indirect_thick_4"
+                                                    id="floor-indirect-thick-4"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>슬라브 두께</option>
                                             </select>
@@ -828,7 +900,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_kind_5" id="floor-direct-kind-5"
+                                            <select class="custom-select" name="floor_direct_kind_5"
+                                                    id="floor-direct-kind-5"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -836,7 +909,8 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_direct_thick_5" id="floor-direct-thick-5"
+                                            <select class="custom-select" name="floor_direct_thick_5"
+                                                    id="floor-direct-thick-5"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
@@ -845,7 +919,8 @@
                                     <div class="col-md-2 col-sm-12"></div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_kind_5" id="floor-indirect-kind-5"
+                                            <select class="custom-select" name="floor_indirect_kind_5"
+                                                    id="floor-indirect-kind-5"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 종류</option>
                                             </select>
@@ -853,8 +928,9 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="floor_indirect_thick_5" id="floor-indirect-thick-5"
-                                                onchange="onchangeCombobox(this.id)">
+                                            <select class="custom-select" name="floor_indirect_thick_5"
+                                                    id="floor-indirect-thick-5"
+                                                    onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>단열재 두께</option>
                                             </select>
                                         </div>
@@ -864,15 +940,18 @@
                                 <!-- End of 바닥난방 -->
                             </div>
                             <!-- Start of 바닥평균열관류율-->
-                            <div id="floor-avg-header" class="clearfix" style="background-color : #F7DC6F; display: none;">
-                                <div class="col-md-12 col-sm-12" style="display : inline-block; text-align: right; text-align: center">
+                            <div id="floor-avg-header" class="clearfix"
+                                 style="background-color : #F7DC6F; display: none;">
+                                <div class="col-md-12 col-sm-12"
+                                     style="display : inline-block; text-align: right; text-align: center">
                                     <h5 class="text h5" style="display: inline-block;">바닥평균열관류율</h5>
                                     <p id="floor-avg-trans" style="display: inline-block; font-weight: bolder"></p>
                                     <p style="display: inline-block">W/㎡k : </p>
                                     <p id="floor-avg-point" style="display: inline-block;"></p>
                                     <p id="floor-avg-locale" style="display: inline-block; font-weight: bolder;"></p>
                                     <p id="floor-avg-result-1" style="display: inline-block;">W/㎡k 이하를 </p>
-                                    <p id="floor-avg-result" style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
+                                    <p id="floor-avg-result"
+                                       style="font-weight: bold; font-size: large; display: inline-block; margin-right: 5%;"></p>
                                 </div>
                             </div>
                             <!-- End of 바닥평균열관류율-->
@@ -880,25 +959,23 @@
                         </div>
                         <!-- Default Basic Forms End -->
                     </div>
-                    <div style="text-align: center">
-                        <input class="btn btn-primary" type="submit" value="보고서출력" onclick="oncliclkPrintReport()">
-                        <input class="btn btn-primary" onclick="onclickSave()" value="저장">
+                    <div class="col-md-4 col-sm-12" style="text-align: center; margin: auto">
+                        <input style="width: 45%;" class="btn btn-primary" type="submit" value="출력" onclick="oncliclkPrintReport()">
+                        <input style="width: 45%;" class="btn btn-primary" onclick="onclickSave()" value="저장">
                     </div>
                 </div>
             </div>
             <!-- Input Validation End -->
         </div>
-        <div id="footer" class="footer-wrap pd-20 mb-20 card-box">
-            Copyright ⓒ 2021 건축환경그룹 코다 All rights reserved.
-            <a href="https://codaa.xyz/" target="_blank">CODAA</a>
-        </div>
-        </div>
-        </div>
-        <!-- js -->
-        <script src="{%  static 'scripts/core.js' %}"></script>
-        <script src="{%  static 'scripts/script.min.js' %}"></script>
-        <script src="{%  static 'scripts/process.js' %}"></script>
-        <script src="{%  static 'scripts/layout-settings.js' %}"></script>
     </form>
-</body>
-</html>
+</div>
+    <!-- js -->
+    <script src="{% static 'scripts/custom/01_uvalue_calc.js' %}"></script>
+    <script src="{% static 'scripts/core.js' %}"></script>
+    <script src="{% static 'scripts/script.min.js' %}"></script>
+    <script src="{% static 'scripts/process.js' %}"></script>
+    <script src="{% static 'scripts/layout-settings.js' %}"></script>
+{% endblock %}
+
+
+
