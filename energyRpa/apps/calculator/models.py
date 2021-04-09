@@ -149,6 +149,8 @@ class CalcUvalueTmpl(models.Model):
     win_indirect_width = models.FloatField(blank=True, null=True)
     win_direct_kind_1 = models.IntegerField(blank=True, null=True)
     win_indirect_kind_1 = models.IntegerField(blank=True, null=True)
+    roof_direct_width = models.IntegerField(blank=True, null=True)
+    roof_indirect_width = models.IntegerField(blank=True, null=True)
     roof_direct_kind_1 = models.IntegerField(blank=True, null=True)
     roof_direct_thick_1 = models.IntegerField(blank=True, null=True)
     roof_indirect_kind_1 = models.IntegerField(blank=True, null=True)

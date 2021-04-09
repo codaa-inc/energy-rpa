@@ -10,6 +10,7 @@ class CalcUvalueTmplForm(forms.ModelForm):
                   'wall_direct_kind_3', 'wall_direct_thick_3', 'wall_indirect_kind_3', 'wall_indirect_thick_3',
                   'wall_direct_kind_4', 'wall_direct_thick_4', 'wall_indirect_kind_4', 'wall_indirect_thick_4',
                   'win_direct_kind_1', 'win_indirect_kind_1', 'win_direct_width', 'win_indirect_width',
+                  'roof_direct_width', 'roof_indirect_width',
                   'roof_direct_kind_1', 'roof_direct_thick_1', 'roof_indirect_kind_1', 'roof_indirect_thick_1',
                   'roof_direct_kind_2', 'roof_direct_thick_2', 'roof_indirect_kind_2', 'roof_indirect_thick_2',
                   'roof_direct_kind_3', 'roof_direct_thick_3', 'roof_indirect_kind_3', 'roof_indirect_thick_3',

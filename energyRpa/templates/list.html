@@ -24,17 +24,21 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for calc in calc_list %}
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>마석우리 오피스텔</td>
-                                <td>열관류율 계산기</td>
-                                <td>{{ calc.wrt_dt }}</td>
-                                <td><span class="badge badge-primary">진행중</span></td>
-                                <td><a href="uvalue/{{ calc.uvalue_tmpl_cd }}"><span class="badge badge-secondary">수정하기</span></a></td>
-                                <td><a href="#"><span class="badge badge-success">출력하기</span></a></td>
-                            </tr>
-                        {% endfor %}
+                        {% if calc_list %}
+                            {% for calc in calc_list %}
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>마석우리 오피스텔</td>
+                                    <td>열관류율 계산기</td>
+                                    <td>{{ calc.wrt_dt }}</td>
+                                    <td><span class="badge badge-primary">진행중</span></td>
+                                    <td><a href="uvalue/{{ calc.uvalue_tmpl_cd }}"><span class="badge badge-secondary">수정하기</span></a></td>
+                                    <td><a href="#"><span class="badge badge-success">출력하기</span></a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="7">등록된 계산기가 없습니다</td></tr>
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>

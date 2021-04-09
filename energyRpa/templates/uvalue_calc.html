@@ -2,23 +2,25 @@
 {% load static %}
 {% block content %}
 <div class="main-container">
+<script src="{% static 'scripts/custom/01_uvalue_calc.js' %}"></script>
 <script>
-    // template id가 넘어온 경우 저장된 계산기를 불러온다.
-    {% if id %}
-        $.ajax({
-            cache : false,
-            url : 'data/' + {{ id | escapejs }},
-            type : 'POST',
-            async: false,
-            data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
-            success : function(data) {
-                let jsonString = ((JSON.parse(JSON.stringify(data.calc).replace(/(\s*)/g, "")).split("fields")[1]).slice(3)).slice(0, -3);
-                setUserData(jsonString);
-            },
-            error : function(xhr, status) {
-            }
-        });
-    {% endif %}
+    function hasAnyCalcInfo() {
+        {% if id %} // template id가 넘어온 경우 저장된 계산기를 불러온다.
+            $.ajax({
+                cache : false,
+                url : 'select/' + {{ id | escapejs }},
+                type : 'POST',
+                async: false,
+                data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+                success : function(data) {
+                    let jsonArr = (((JSON.parse(JSON.stringify(data.calc).replace(/(\s*)/g, "")).split("fields")[1]).slice(3)).slice(0, -3)).split(",");
+                    initUserSet(jsonArr, {{ id | escapejs }});
+                },
+                error : function(xhr, status) {
+                }
+            });
+        {% endif %}
+    }
 </script>
     <form id="template" name="template">{% csrf_token %}
         <input name="username" style="visibility: hidden;" value="{{ request.session.username }}">
@@ -68,12 +70,6 @@
                                 적용 | 지역별 녹색건축설계기준 고려한 평균열관류율 기준 적용 | 표면 열전달 저항값 자동 계산됨 | 창호열관류율은 제조사의 시험성적서 값을 임의적용 함.
                                 <br>* 본 계산기는 3,000m2 이하 중소규모 건축물 검토에 적합함. 녹색건축물 기준 검토 및 계산기 관련 문의는 info@codaa.kr 로 연락.
                             </p>
-                            <div style="display : none; margin-left: auto; margin-right: 20px;">
-                                <select class="selectpicker form-control" disabled>
-                                    <option>타겟 EPI 65점</option>
-                                    <option>타겟 EPI 74점</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                     <!-- Start of form -->
@@ -343,7 +339,7 @@
                                     </div>
                                     <div class="col-md-4 col-sm-12">
                                         <div class="form-group">
-                                            <select class="custom-select" name="" id="win-indirect-kind-1"
+                                            <select class="custom-select" name="win_indirect_kind_1" id="win-indirect-kind-1"
                                                     onchange="onchangeCombobox(this.id)">
                                                 <option disabled hidden selected>창호 종류</option>
                                             </select>
@@ -437,7 +433,7 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" id="roof-direct-width"
+                                        <input class="form-control" name="roof_direct_width" id="roof-direct-width"
                                                onchange="onchangeWidth(this.id)"
                                                style="width: 60%; display: inline-block;" type="number" value="100">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
@@ -467,7 +463,7 @@
                                     </div>
                                     <div class="col-md-2 col-sm-12">
                                         <p style="display: inline-block; font-size: smaller">면적</p>
-                                        <input class="form-control" id="roof-indirect-width"
+                                        <input class="form-control" name="roof_indirect_width" id="roof-indirect-width"
                                                onchange="onchangeWidth(this.id)"
                                                style="width: 60%; display: inline-block;" type="number" value="0">
                                         <p style="display: inline-block; font-size: smaller">㎡</p>
@@ -970,7 +966,6 @@
     </form>
 </div>
     <!-- js -->
-    <script src="{% static 'scripts/custom/01_uvalue_calc.js' %}"></script>
     <script src="{% static 'scripts/core.js' %}"></script>
     <script src="{% static 'scripts/script.min.js' %}"></script>
     <script src="{% static 'scripts/process.js' %}"></script>

@@ -25,12 +25,13 @@ urlpatterns = [
     path('signout/', auth_views.LogoutView.as_view(), name='logout'),
 
     path('', index),
-    path('calcs/', calcs),
-    path('calcs/uvalue', uvalue_init_calcs),
-    path('calcs/uvalue/<int:uvalue_tmpl_cd>', uvalue_user_calcs),
-    path('calcs/uvalue/data/<int:id>', uvalue_user_calcs_res),
-    path('calcs/uvalue/initdata', uvalue_data),
+    path('calcs/', list),
+    path('calcs/uvalue', uvalue_init),
+    path('calcs/uvalue/<int:uvalue_tmpl_cd>', uvalue_user),
+    path('calcs/uvalue/select/<int:id>', uvalue_select),
+    path('calcs/uvalue/insert', uvalue_insert),
+    path('calcs/uvalue/update/<int:id>', uvalue_update),
+    path('calcs/uvalue/data', uvalue_data),
     path('calcs/uvalue/report', uvalue_report),
-    path('calcs/uvalue/post', uvalue_save)
 ]
 

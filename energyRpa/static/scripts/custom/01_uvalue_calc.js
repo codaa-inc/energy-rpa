@@ -9,23 +9,15 @@ let avgHeatTransCoArr = new Array();        // 평균열관류율기준
 let localeEpiArr = new Array();             // 지자체배점
 let slabHeatResistanceArr = new Array();    // 슬라브상부단열기준
 let isUserCalc = false;                     // true = 저장된 값을 불러오는 계산기, false = 기본 계산기
-
+let userMap = new Map();                    // 사용자 계산기 정보를 가지고 있는 Map
+let tmplCd = null;                          // 저장된 계산기의 PK
 /**
 * 페이지 로딩 시 JSON 데이터를 호출하는 함수
 */
-fetch('/calcs/uvalue/initdata').then((response) => response.json()).then((json) => initSet(json));
-
-
-function setUserData(userData) {
-    isUserCalc = true;  // 저장된 계산기 데이터를 불러온 경우
-
-    /** TODO : 컬럼에 구군선택 추가, 조건 select disabled, 저장된 데이터 뿌리는 로직 추가
-     *      OR choiceField 방식으로 전체 변경 고민
-     * */
-}
+fetch('/calcs/uvalue/data').then((response) => response.json()).then((json) => initSet(json));
 
 /**
- * 초기 데이터를 셋팅하는 함수
+ * 초기 데이터 셋팅하는 함수 - Guest
  * */
 function initSet(items){
     // 서버에서 가져온 JSON 데이터 전역변수에 복사
@@ -50,12 +42,50 @@ function initSet(items){
         op.text = use[i]['use'];
         document.getElementById('use').appendChild(op);
     }
+
+    hasAnyCalcInfo(); // 불러올 사용자 계산기 정보가 있는지 확인
+
 };
+
+/**
+ * 초기 데이터 셋팅하는 함수 - User
+ * */
+function initUserSet(userCalcArr, id) {
+    // 사용자 계산기 flag 변경
+    isUserCalc = true;
+    // 계산기 아이디를 global 변수에 담는다.
+    tmplCd = id;
+    // 사용자 계산기 데이터를 global Map에 담는다.
+    for(var i in userCalcArr) {
+        let key = ((userCalcArr[i].split(":")[0]).replace(/_/g, "-")).replace(/"/g, "");
+        let value = userCalcArr[i].split(":")[1];
+        userMap.set(key, value);
+    }
+    // 지역구분, 용도구분 셋팅
+    $('#sido1').css('display', 'none');
+    $('#locale').prop('disabled', 'false');
+    $('#locale').val(userMap.get('area-gb-cd'));// 지역콤보
+    $('#use ').val(userMap.get('purps-cd'));    // 용도콤보
+    LOCALE_CODE = userMap.get('area-gb-cd');    // 지역코드
+    USE_CODE = userMap.get('purps-cd');         // 용도코드
+    $('#locale').prop('disabled', 'true');
+    $('#use').prop('disabled', 'true');
+    // 면적 셋팅
+    const widthArr = ['wall-direct-width', 'wall-indirect-width', 'win-direct-width', 'win-indirect-width',
+                    'roof-direct-width', 'roof-indirect-width', 'floorb-direct-width', 'floorb-indirect-width',
+                    'floor-direct-width', 'floor-indirect-width'];
+    for(let i in widthArr) {
+        $('#' + widthArr[i]).val(userMap.get(widthArr[i]));
+    }
+
+    // 사용자 계산기를 불러온 경우 바로 검토를 실행한다.
+    onclickSearch();
+}
 
 /**
 *  콤보박스를 셋팅하는 함수
 */
-function setInitCombobox(items) {
+function setInitCombobox() {
     // 단열재
     const material = data[2].materialThermalConductivity;
     const materialArr = ['wall-direct-kind-2', 'wall-indirect-kind-2', 'wall-direct-kind-4', 'wall-indirect-kind-4',
@@ -240,30 +270,36 @@ function onclickSave() {
     // selectbox 선택된 index를 selectbox의 value로 저장한다
     for(let i in selTag) {
         const selId = selTag[i].id;
-        if ((selId != undefined || selId != null) &&
-            (selId.includes("kind") || selId.includes("thick"))) {
-            const option = new Option();
-            option.value = $("#" + selId + " option").index( $("#" + selId +" option:selected"));;
-            $('#' + selId).append(option);
-            const lastIdx = $("#"+ selId + " option").length - 1;
-            $('#' + selId + " option:eq(" + lastIdx + ")").prop("selected", "selected");
+        if (selId != undefined || selId != null) {
+            $('#' + selId).prop('disabled', '');   // selectbox disabled false
+            if (selId.includes("kind") || selId.includes("thick")) {
+                const option = new Option();
+                option.value = $("#" + selId + " option").index( $("#" + selId +" option:selected"));;
+                $('#' + selId).append(option);
+                const lastIdx = $("#"+ selId + " option").length - 1;
+                $('#' + selId + " option:eq(" + lastIdx + ")").prop("selected", "selected");
+            }
         }
     }
-    // 지역구분 disable false
-    $('#locale').prop("disabled", false);
 
     // ajax 호출
-    var formData = $('#template').serialize();
+    const formData = $('#template').serialize();
+    let urlPath = "";
+    if (isUserCalc) {
+       urlPath = "/calcs/uvalue/update/" + tmplCd;    // 수정
+    } else {
+        urlPath = "/calcs/uvalue/insert";             // 신규등록
+    }
     $.ajax({
         cache : false,
-        url : "/calcs/uvalue/post",
+        url : urlPath,
         type : 'POST',
         async: false,
         data : formData,
         success : function(data) {
             if (data.result) {
                 alert("저장되었습니다!");
-                window.location.href = "/calcs/"
+                window.location.href = "/calcs/";
             } else {
                 alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
             }
@@ -274,67 +310,29 @@ function onclickSave() {
     });
 };
 
-
 /**
 * 초기 데이터 셋팅 함수
 */
 function setInitValue() {
-    if(!isUserCalc) {
-        // 외벽 default 값
-        $("#wall-direct-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#wall-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#wall-direct-kind-2 option:eq(1)").prop("selected", "selected");
-        $("#wall-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-        $('#wall-direct-thick-2 option:eq(11)').prop("selected", "selected");
-        $('#wall-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-        $("#wall-direct-kind-3 option:eq(1)").prop("selected", "selected");
-        $("#wall-indirect-kind-3 option:eq(1)").prop("selected", "selected");
-        $('#wall-direct-thick-3 option:eq(22)').prop("selected", "selected");
-        $('#wall-indirect-thick-3 option:eq(22)').prop("selected", "selected");
-        $("#wall-direct-kind-4 option:eq(1)").prop("selected", "selected");
-        $("#wall-indirect-kind-4 option:eq(1)").prop("selected", "selected");
-        // 창호 default 값
-        $('#win-direct-kind-1 option:eq(1)').prop("selected", "selected");
-        $('#win-indirect-kind-1 option:eq(1)').prop("selected", "selected");
-        // 지붕 default 값
-        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#roof-direct-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#roof-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-        $('#roof-direct-thick-1 option:eq(11)').prop("selected", "selected");
-        $('#roof-indirect-thick-1 option:eq(11)').prop("selected", "selected");
-        $("#roof-direct-kind-2 option:eq(1)").prop("selected", "selected");
-        $("#roof-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-        $('#roof-direct-thick-2 option:eq(11)').prop("selected", "selected");
-        $('#roof-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-        // 비난방바닥 default 값
-        $("#floorb-direct-kind-1 option:eq(1)").prop("selected", "selected");
-        $("#floorb-indirect-kind-1 option:eq(1)").prop("selected", "selected");
-        $('#floorb-direct-thick-1 option:eq(11)').prop("selected", "selected");
-        $('#floorb-indirect-thick-1 option:eq(11)').prop("selected", "selected");
-        $("#floorb-direct-kind-2 option:eq(1)").prop("selected", "selected");
-        $("#floorb-indirect-kind-2 option:eq(1)").prop("selected", "selected");
-        $('#floorb-direct-thick-2 option:eq(11)').prop("selected", "selected");
-        $('#floorb-indirect-thick-2 option:eq(11)').prop("selected", "selected");
-        // 난방바닥 default 값
-        $('#floor-direct-thick-1 option:eq(3)').prop("selected", "selected");
-        $('#floor-indirect-thick-1 option:eq(3)').prop("selected", "selected");
-        $('#floor-direct-kind-2 option:eq(1)').prop("selected", "selected");
-        $('#floor-indirect-kind-2 option:eq(1)').prop("selected", "selected");
-        $('#floor-direct-thick-2 option:eq(17)').prop("selected", "selected");
-        $('#floor-indirect-thick-2 option:eq(17)').prop("selected", "selected");
-        $('#floor-direct-kind-3 option:eq(1)').prop("selected", "selected");
-        $('#floor-indirect-kind-3 option:eq(1)').prop("selected", "selected");
-        $('#floor-direct-thick-3 option:eq(11)').prop("selected", "selected");
-        $('#floor-indirect-thick-3 option:eq(11)').prop("selected", "selected");
-        $("#floor-direct-kind-4 option:eq(1)").prop("selected", "selected");
-        $("#floor-indirect-kind-4 option:eq(1)").prop("selected", "selected");
-        $('#floor-direct-thick-4 option:eq(11)').prop("selected", "selected");
-        $('#floor-indirect-thick-4 option:eq(11)').prop("selected", "selected");
-        $('#floor-direct-kind-5 option:eq(1)').prop("selected", "selected");
-        $('#floor-indirect-kind-5 option:eq(1)').prop("selected", "selected");
-        $('#floor-direct-thick-5 option:eq(11)').prop("selected", "selected");
-        $('#floor-indirect-thick-5 option:eq(11)').prop("selected", "selected");
+    const idArr = ['wall-direct-kind-1', 'wall-direct-thick-1', 'wall-indirect-kind-1', 'wall-indirect-thick-1',
+                    'wall-direct-kind-2', 'wall-direct-thick-2', 'wall-indirect-kind-2', 'wall-indirect-thick-2',
+                    'wall-direct-kind-3', 'wall-direct-thick-3', 'wall-indirect-kind-3', 'wall-indirect-thick-3',
+                    'wall-direct-kind-4', 'wall-direct-thick-4', 'wall-indirect-kind-4', 'wall-indirect-thick-4',
+                    'win-direct-kind-1', 'win-indirect-kind-1',
+                    'roof-direct-kind-1', 'roof-direct-thick-1', 'roof-indirect-kind-1', 'roof-indirect-thick-1',
+                    'roof-direct-kind-2', 'roof-direct-thick-2', 'roof-indirect-kind-2', 'roof-indirect-thick-2',
+                    'roof-direct-kind-3', 'roof-direct-thick-3', 'roof-indirect-kind-3', 'roof-indirect-thick-3',
+                    'floorb-direct-kind-1', 'floorb-direct-thick-1', 'floorb-indirect-kind-1', 'floorb-indirect-thick-1',
+                    'floorb-direct-kind-2', 'floorb-direct-thick-2', 'floorb-indirect-kind-2', 'floorb-indirect-thick-2',
+                    'floor-direct-kind-1', 'floor-direct-thick-1', 'floor-indirect-kind-1', 'floor-indirect-thick-1',
+                    'floor-direct-kind-2', 'floor-direct-thick-2', 'floor-indirect-kind-2', 'floor-indirect-thick-2',
+                    'floor-direct-kind-3', 'floor-direct-thick-3', 'floor-indirect-kind-3', 'floor-indirect-thick-3',
+                    'floor-direct-kind-4', 'floor-direct-thick-4', 'floor-indirect-kind-4', 'floor-indirect-thick-4',
+                    'floor-direct-kind-5', 'floor-direct-thick-5', 'floor-indirect-kind-5', 'floor-indirect-thick-5']
+    if(isUserCalc) {
+        for(let i in idArr) {
+            $("#"+ idArr[i] +" option:eq(" + userMap.get(idArr[i]) + ")").prop("selected", "selected");
+        }
     } else {
         // 외벽 default 값
         $("#wall-direct-kind-1 option:eq(1)").prop("selected", "selected");

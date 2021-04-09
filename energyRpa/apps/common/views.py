@@ -9,9 +9,10 @@ from django.contrib.auth import login, authenticate
 def index(request) :
     return render(request, 'index.html')
 
-def calcs(request):
+def list(request):
     username = request.session.get('username')
-    context = {"calc_list": CalcUvalueTmpl.objects.filter(username=username)}
+    calc_list = CalcUvalueTmpl.objects.filter(username=username)
+    context = {"calc_list": calc_list}
     return render(request, 'list.html', context)
 
 def signin(request) :
