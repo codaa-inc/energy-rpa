@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="main-container">
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="{% static 'scripts/custom/01_uvalue_calc.js' %}"></script>
 <script>
     function hasAnyCalcInfo() {
@@ -25,39 +26,35 @@
     <form id="template" name="template">{% csrf_token %}
         <input name="username" style="visibility: hidden;" value="{{ request.session.username }}">
         <div style="position : relative; margin-right: -70px; width: 100%;">
-            <div class="header-left">
-                <div class="col-md-12 col-sm-12">
-                    <div class="title" style="display: inline-block">
-                        <h5 style="display: inline-block; margin-left: 20px;">열관류율 계산기(KS)</h5>
-                    </div>
+            <div class="col-md-12 col-sm-12" style="margin-left: 20px;">
+                <div class="title" style="display: inline-block;">
+                    <h5 style="display: inline-block;">열관류율 계산기(KS)</h5>
                 </div>
             </div>
-            <div class="header-right" style="width: 80%; margin-left: 20px;">
-                <div style="margin: auto;">
-                    <label style="display : inline-block; margin-top: 10px; margin-right: 5px; font-weight: bold">지역구분</label>
-                    <div style="display : inline-block;">
-                        <select class="custom-select" id="sido1" name="sido1"></select>
+            <div class="col-md-12 col-sm-12" style="margin-top: 20px; margin-left: 20px;">
+                <label style="display : inline-block; font-weight: bold">지역구분</label>
+                <div id="sample4_roadAddress_div" class="col-md-4 col-sm-12" style="display : inline-block; padding: 0px">
+                    <div class="form-group">
+                        <input type="text" class="form-control" onclick="execDaumPostcode()" id="sample4_roadAddress" placeholder="주소검색">
                     </div>
-                    <div style="display : inline-block;">
-                        <select class="custom-select" id="gugun1" name="gugun1" style="display: none"></select>
-                    </div>
-                    <div style="display : inline-block;">
-                        <select class="custom-select" disabled name="area_gb_cd" id="locale"
-                                onchange="onchangeLocale(this.value)" style="display : inline-block;">
-                            <option value="" disabled hidden selected>지역구분</option>
-                        </select>
-                    </div>
-                    <label style="display : inline-block; margin-left: 15px; margin-right: 5px; margin-top: 10px; font-weight: bold">용도구분</label>
-                    <div style="display : inline-block">
-                        <select class="custom-select" id="use" name="purps_cd" onchange="onchangeUse(this.value)">
-                            <option disabled hidden selected>용도구분</option>
-                        </select>
-                    </div>
-                    <i class="icon-copy dw dw-search2" onclick="onclickSearch()"
-                       style="margin-left: 20px; margin-top: 10px; cursor: pointer;">&nbsp;검토</i>
-                    <i class="icon-copy dw dw-refresh2" onclick="onclickRefresh()"
-                       style="margin-left: 10px; margin-top: 10px; cursor: pointer;">&nbsp;초기화</i>
                 </div>
+                <span id="guide" style="color:#999;display:none"></span>
+                <div style="display : inline-block;">
+                    <select class="custom-select" disabled name="area_gb_cd" id="locale"
+                            onchange="onchangeLocale(this.value)" style="display : inline-block;">
+                        <option value="" disabled hidden selected>지역구분</option>
+                    </select>
+                </div>
+                <label style="display : inline-block; margin-left: 15px; margin-right: 5px; margin-top: 10px; font-weight: bold">용도구분</label>
+                <div style="display : inline-block">
+                    <select class="custom-select" id="use" name="purps_cd" onchange="onchangeUse(this.value)">
+                        <option disabled hidden selected>용도구분</option>
+                    </select>
+                </div>
+                <i class="icon-copy dw dw-search2" onclick="onclickSearch()"
+                   style="margin-left: 20px; margin-top: 10px; cursor: pointer;">&nbsp;검토</i>
+                <i class="icon-copy dw dw-refresh2" onclick="onclickRefresh()"
+                   style="margin-left: 10px; margin-top: 10px; cursor: pointer;">&nbsp;초기화</i>
             </div>
         </div>
         <div class="main-container" style="padding: 0px;">
@@ -956,7 +953,7 @@
                         <!-- Default Basic Forms End -->
                     </div>
                     <div class="col-md-4 col-sm-12" style="text-align: center; margin: auto">
-                        <input style="width: 45%;" class="btn btn-primary" type="submit" value="출력" onclick="oncliclkPrintReport()">
+                        <input id="report" style="display: none; width: 45%;" class="btn btn-primary" type="submit" value="출력" onclick="oncliclkPrintReport()">
                         <input style="width: 45%;" class="btn btn-primary" onclick="onclickSave()" value="저장">
                     </div>
                 </div>

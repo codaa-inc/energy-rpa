@@ -33,7 +33,7 @@
                                     <td>{{ calc.wrt_dt }}</td>
                                     <td><span class="badge badge-primary">진행중</span></td>
                                     <td><a href="uvalue/{{ calc.uvalue_tmpl_cd }}"><span class="badge badge-secondary">수정하기</span></a></td>
-                                    <td><a href="#"><span class="badge badge-success">출력하기</span></a></td>
+                                    <td><a href="uvalue/report/{{ calc.uvalue_tmpl_cd }}"><span class="badge badge-success">출력하기</span></a></td>
                                 </tr>
                             {% endfor %}
                         {% else %}

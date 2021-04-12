@@ -32,6 +32,6 @@ urlpatterns = [
     path('calcs/uvalue/insert', uvalue_insert),
     path('calcs/uvalue/update/<int:id>', uvalue_update),
     path('calcs/uvalue/data', uvalue_data),
-    path('calcs/uvalue/report', uvalue_report),
+    path('calcs/uvalue/report/<int:uvalue_tmpl_cd>', uvalue_report),
 ]
 
