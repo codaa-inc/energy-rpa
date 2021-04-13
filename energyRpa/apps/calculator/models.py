@@ -11,16 +11,6 @@ class CalcAerConc(models.Model):
         db_table = 'calc_aer_conc'
 
 
-class CalcAreaGb(models.Model):
-    area_gb_cd = models.AutoField(primary_key=True)
-    area_gb_nm = models.CharField(max_length=255)
-    use_yn = models.CharField(max_length=10, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'calc_area_gb'
-
-
 class CalcExFinm(models.Model):
     ex_finm_cd = models.AutoField(primary_key=True)
     ex_finm_nm = models.CharField(max_length=255)
@@ -48,8 +38,8 @@ class CalcLocalgvPoint(models.Model):
     ex_wall_point = models.FloatField(blank=True, null=True)
     roof_point = models.FloatField(blank=True, null=True)
     floor_point = models.FloatField(blank=True, null=True)
-    purps_cd = models.ForeignKey('CalcPurps', models.DO_NOTHING, db_column='purps_cd', blank=True, null=True)
-    area_gb_cd = models.ForeignKey(CalcAreaGb, models.DO_NOTHING, db_column='area_gb_cd')
+    purps_cd = models.ForeignKey('common.CmnPurps', models.DO_NOTHING, db_column='purps_cd', blank=True, null=True)
+    area_gb_cd = models.ForeignKey('common.CmnAreaGb', models.DO_NOTHING, db_column='area_gb_cd')
     point_yn = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
@@ -63,39 +53,19 @@ class CalcMeanUvalue(models.Model):
     roof = models.FloatField(blank=True, null=True)
     floor = models.FloatField(blank=True, null=True)
     point = models.FloatField(blank=True, null=True)
-    purps_cd = models.ForeignKey('CalcPurps', models.DO_NOTHING, db_column='purps_cd')
-    area_gb_cd = models.ForeignKey(CalcAreaGb, models.DO_NOTHING, db_column='area_gb_cd')
+    purps_cd = models.ForeignKey('common.CmnPurps', models.DO_NOTHING, db_column='purps_cd')
+    area_gb_cd = models.ForeignKey('common.CmnAreaGb', models.DO_NOTHING, db_column='area_gb_cd')
 
     class Meta:
         managed = False
         db_table = 'calc_mean_uvalue'
 
 
-class CalcPart(models.Model):
-    part_cd = models.AutoField(primary_key=True)
-    part_nm = models.CharField(max_length=255)
-    use_yn = models.CharField(max_length=10, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'calc_part'
-
-
-class CalcPurps(models.Model):
-    purps_cd = models.AutoField(primary_key=True)
-    purps_nm = models.CharField(max_length=255)
-    use_yn = models.CharField(max_length=10, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'calc_purps'
-
-
 class CalcSalbRvalue(models.Model):
     slab_rvalue_cd = models.AutoField(primary_key=True)
     direct = models.FloatField(blank=True, null=True)
     indirect = models.FloatField(blank=True, null=True)
-    area_gb_cd = models.ForeignKey(CalcAreaGb, models.DO_NOTHING, db_column='area_gb_cd')
+    area_gb_cd = models.ForeignKey('common.CmnAreaGb', models.DO_NOTHING, db_column='area_gb_cd')
 
     class Meta:
         managed = False
@@ -106,7 +76,7 @@ class CalcSrfcRvalue(models.Model):
     srfc_rvalue_cd = models.AutoField(primary_key=True)
     outdoor = models.FloatField(blank=True, null=True)
     indoor = models.FloatField(blank=True, null=True)
-    part_cd = models.ForeignKey(CalcPart, models.DO_NOTHING, db_column='part_cd')
+    part_cd = models.ForeignKey('common.CmnPart', models.DO_NOTHING, db_column='part_cd')
 
     class Meta:
         managed = False
@@ -116,9 +86,9 @@ class CalcSrfcRvalue(models.Model):
 class CalcUvalue(models.Model):
     uvalue_cd = models.AutoField(primary_key=True)
     uvalue = models.FloatField()
-    part_cd = models.ForeignKey(CalcPart, models.DO_NOTHING, db_column='part_cd')
-    purps_cd = models.ForeignKey(CalcPurps, models.DO_NOTHING, db_column='purps_cd')
-    area_gb_cd = models.ForeignKey(CalcAreaGb, models.DO_NOTHING, db_column='area_gb_cd')
+    part_cd = models.ForeignKey('common.CmnPart', models.DO_NOTHING, db_column='part_cd')
+    purps_cd = models.ForeignKey('common.CmnPurps', models.DO_NOTHING, db_column='purps_cd')
+    area_gb_cd = models.ForeignKey('common.CmnAreaGb', models.DO_NOTHING, db_column='area_gb_cd')
 
     class Meta:
         managed = False
@@ -198,6 +168,7 @@ class CalcUvalueTmpl(models.Model):
     purps_cd = models.IntegerField(blank=True, null=True)
     area_gb_cd = models.IntegerField(blank=True, null=True)
     username = models.CharField(max_length=150, blank=True, null=True)
+    project_cd = models.IntegerField(blank=True, null=True)
     wrt_dt = models.DateTimeField(auto_now_add=True)
 
     def tmpl_save(self):
@@ -217,4 +188,3 @@ class CalcWin(models.Model):
     class Meta:
         managed = False
         db_table = 'calc_win'
-

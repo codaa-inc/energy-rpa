@@ -1,7 +1,6 @@
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import AuthUser
 from apps.calculator.models import CalcUvalueTmpl
 from django.contrib.auth import login, authenticate
 
@@ -32,3 +31,16 @@ def signin(request) :
         else:
             context = {"result": False, "message": "아이디 또는 비밀번호를 확인하세요."}
         return HttpResponse(json.dumps(context), content_type="application/json")
+
+def insert_project(request) :
+    if request.method == 'POST':  # POST 요청이면 최초 프로젝트 정보를 저장한다
+
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        content = body['content']
+        print(content)
+
+        context = {"result": False}
+        return HttpResponse(json.dumps(context), content_type="application/json")
+    else:       # GET 요청이면 생성된 프로젝트 정보를 렌더링한다.
+        return render(request, 'form.html')

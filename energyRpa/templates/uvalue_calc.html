@@ -3,6 +3,7 @@
 {% block content %}
 <div class="main-container">
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="{% static 'scripts/custom/common.js' %}"></script>
 <script src="{% static 'scripts/custom/01_uvalue_calc.js' %}"></script>
 <script>
     function hasAnyCalcInfo() {
@@ -35,7 +36,7 @@
                 <label style="display : inline-block; font-weight: bold">지역구분</label>
                 <div id="sample4_roadAddress_div" class="col-md-4 col-sm-12" style="display : inline-block; padding: 0px">
                     <div class="form-group">
-                        <input type="text" class="form-control" onclick="execDaumPostcode()" id="sample4_roadAddress" placeholder="주소검색">
+                        <input type="text" class="form-control" onclick="execDaumPostcode()" id="roadAddress" placeholder="주소검색">
                     </div>
                 </div>
                 <span id="guide" style="color:#999;display:none"></span>

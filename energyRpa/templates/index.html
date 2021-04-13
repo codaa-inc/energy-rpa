@@ -1,8 +1,53 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="{% static 'scripts/custom/common.js' %}"></script>
+    <script>
+    /**
+     * DAUM 우편번호 API 호출함수
+     * */
+    function execDaumPostcode() {
+        new daum.Postcode({
+            // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            oncomplete: function (data) {
+                // 지역구분 구하기
+                const sido = data.roadAddress.split(" ")[0];
+                const gugun = data.roadAddress.split(" ")[1];
+                const areaGbCd = getAreaGbCd(sido, gugun);
+                // 요청 파라미터 : 도로명주소, 시군구코드, 법정동코드, 지역구분
+                const reqParam = {"road_address":data.roadAddress, "sigungu_cd":data.sigunguCode,
+                    "bjdong_cd":data.bcode, "area_gb_cd":areaGbCd, "csrfmiddlewaretoken":'{{ csrf_token }}'};
+                console.log(reqParam);
+                $.ajax({
+                    cache: false,
+                    url: '/project/',
+                    type: 'POST',
+                    async: false,
+                    data: reqParam,
+                    success: function (data) {
+                        if (data.result) {
+                            window.location.href = "/project/";
+                        } else {
+                            alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
+                        }
+                    },
+                    error: function (xhr, status) {
+                        alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
+                    }
+                });
+            }
+        }).open();
+    };
+    </script>
     <div class="row align-items-center">
-        <div class="col-md-6 col-lg-7">
+        <div class="col-md-12 col-lg-7">
+            <div class="header-search">
+                <div class="form-group mb-0">
+                    <input type="text" class="form-control search-input" placeholder="주소를 검색하세요." onclick="execDaumPostcode()">
+                </div>
+            </div>
             <!-- Fade-in effect -->
             <div class="row clearfix">
                 <div class="col-md-6 col-lg-3">

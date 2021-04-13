@@ -1007,84 +1007,13 @@ function execDaumPostcode() {
         // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
         // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
         oncomplete: function (data) {
-            console.log(data);
-            // 주소 정보를 해당 필드에 넣는다.
-            let roadAddr = data.roadAddress;    // 도로명 주소 변수
+            let roadAddr = data.roadAddress;
             let roadAddrArr = roadAddr.split(" ");
-            document.getElementById("sample4_roadAddress").value = roadAddr;
-            setSigun(roadAddrArr[0], roadAddrArr[1])
+            // 도로명 주소 정보를 해당 필드에 넣는다.
+            document.getElementById("roadAddress").value = roadAddr;
+            // 지역구분코드 함수를 호출해 얻은 지역코드를 셋팅한다.
+            LOCALE_CODE = getAreaGbCd(roadAddrArr[0], roadAddrArr[1]);
+            document.getElementById('locale').value = LOCALE_CODE;
         }
     }).open();
-};
-
-/**
- * 시도를 셋팅하는 함수
- * Param : 선택된 시/도 text, 선택된 구/군 text
- * */
-function setSigun(sido, gugun) {
-    var area0 = ["서울", "인천", "대전", "광주", "대구", "울산", "부산", "세종특별자치시", "경기",
-        "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주특별자치도"];
-    for (let i in area0) {
-        if (area0[i] == sido) {
-            // 2 Depth : 경기,강원,충북,경북,경남
-            if (i == 8 || i == 9 || i == 10 || i == 14 || i == 15) {
-                setGugun(i, gugun);
-                // 1 Depth : 그 외
-            } else {
-                // 중부2 : 인천,대전,세종,충남,전북
-                if (i == 1 || i == 2 || i == 7 || i == 11 || i == 12) {
-                    LOCALE_CODE = 2;
-                // 중부2(서울,경기) : 서울,경기
-                } else if (i == 0 || i == 8) {
-                    LOCALE_CODE = 3;
-                // 남부 : 대구,전남
-                } else if (i == 4 || i == 13) {
-                    LOCALE_CODE = 4;
-                // 남부(부산,광주,울산)
-                } else if (i == 3 || i == 5 || i == 6) {
-                    LOCALE_CODE = 5;
-                // 제주
-                } else if (i == 16) {
-                    LOCALE_CODE = 6;
-                }
-                document.getElementById('locale').value = LOCALE_CODE;
-            }
-            break;
-        }
-    }
-};
-
-/**
- * 구군을 셋팅하는 함수
- * Param : 선택된 시/도 idex, 선택된 구/군 text
- * */
-function setGugun(sido, gugun) {
-    // 구군 세부 구분 배열
-    const gyunggi = ["연천군", "포천시", "가평군", "남양주시", "의정부시", "양주시", "동두천시", "파주시"];
-    const gangwon = ["고성군", "속초시", "양양군", "강릉시", "동해시", "삼척시"];
-    const chungbuk = ["제천시"];
-    const gyungbuk1 = ["봉화군", '청송군']
-    const gyungbuk2 = ["울진군", "영덕군", "포항시", "경주시", "청도군", "경산시"];
-    const gyungnam = ["거창군", "함양군"];
-    if (sido == 8) {
-        // 중부1(경기) : 경기도(연천, 포천, 가평, 남양주, 의정부, 양주, 동두천, 파주)
-        if (gyunggi.includes(gugun)) {
-            LOCALE_CODE = 1;
-            // 중부2(서울, 경기) : 경기도(연천, 포천, 가평, 남양주, 의정부, 양주, 동두천, 파주 제외)
-        } else {
-            LOCALE_CODE = 3;
-        }
-    } else {
-        // 중부1 : 강원도(고성, 속초, 양양, 강릉, 동해, 삼척 제외), 충청북도(제천), 경상북도(봉화, 청송)
-        if ((sido == 9 && !gangwon.includes(gugun)) || (sido == 10 && chungbuk.includes(gugun)) || (sido == 14 && gyungbuk1.includes(gugun))) {
-            LOCALE_CODE = 0;
-            // 남부 : 경상북도(울진, 영덕, 포항, 경주, 청도, 경산), 경상남도(거창, 함양 제외)
-        } else if ((sido == 14 && gyungbuk2.includes(gugun)) || (sido == 15 && !gyungnam.includes(gugun))) {
-            LOCALE_CODE = 4;
-            // 중부2 : 강원도(고성, 속초, 양양, 강릉, 동해, 삼척), 충청북도(제천 제외), 경상북도(봉화, 청송, 울진, 영덕, 포항, 경주, 청도, 경산 제외), 경상남도(거창, 함양)
-        } else {
-            LOCALE_CODE = 2;
-        }
-    }
-    document.getElementById('locale').value = LOCALE_CODE;
 };

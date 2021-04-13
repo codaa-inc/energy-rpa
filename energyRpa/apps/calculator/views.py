@@ -14,21 +14,21 @@ from xhtml2pdf import pisa
 from django.template import Context
 from django.template.loader import get_template
 
-def uvalue_init(request):
+def init_uvalue(request):
     return render(request, 'uvalue_calc.html')
 
-def uvalue_user(request, uvalue_tmpl_cd):
+def get_user_uvalue(request, uvalue_tmpl_cd):
     if uvalue_tmpl_cd is not None:
         return render(request, 'uvalue_calc.html', {"id": uvalue_tmpl_cd})
 
-def uvalue_select(request, id):
+def select_uvalue(request, id):
     if id is not None:
         calc = CalcUvalueTmpl.objects.filter(uvalue_tmpl_cd=id)
         json_serializer = json.Serializer()
         context = {"calc": json_serializer.serialize(calc)}
     return JsonResponse(context)
 
-def uvalue_insert(request):
+def insert_uvalue(request):
     if request.method == 'POST':    # POST 요청이면 폼 데이터를 처리한다
         form = CalcUvalueTmplForm(request.POST)
         if form.is_valid():
@@ -41,7 +41,7 @@ def uvalue_insert(request):
         context = {"result": False}
     return HttpResponse(json_module.dumps(context), content_type="application/json")
 
-def uvalue_update(request, id):
+def update_uvalue(request, id):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.save(update_fields=list(form.fields))
@@ -62,15 +62,14 @@ def uvalue_update(request, id):
         context = {"result": False}
     return HttpResponse(json_module.dumps(context), content_type="application/json")
 
-def uvalue_data(request):
+def load_data_uvalue(request):
     json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uValueCalc.json')
     with open(json_path, 'r', encoding='UTF8') as f:
         json_file = json_module.load(f)
     return HttpResponse(json_module.dumps(json_file), content_type="application/json")
 
-def uvalue_report(request, uvalue_tmpl_cd):
+def report_uvalue(request, uvalue_tmpl_cd):
     calc = CalcUvalueTmpl.objects.filter(uvalue_tmpl_cd=uvalue_tmpl_cd).values()[0]
-    print("type : ", type(calc))
     return render_to_pdf('uvalue_calc.html', {'pagesize': 'A4', 'mylist': calc})
 
 def render_to_pdf(template_src, context_dict):
