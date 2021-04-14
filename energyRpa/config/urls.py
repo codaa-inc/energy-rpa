@@ -29,6 +29,7 @@ urlpatterns = [
     path('signout/', auth_views.LogoutView.as_view(), name='logout'),
     path('calcs/', list),
     path('project/', insert_project),
+    path('project/<int:project_cd>', select_project),
 
     # calculator urls
     path('calcs/uvalue', init_uvalue),

@@ -34,13 +34,14 @@ class CmnProject(models.Model):
     project_nm = models.CharField(max_length=150, blank=True, null=True)
     company = models.CharField(max_length=150, blank=True, null=True)
     username = models.CharField(max_length=45, blank=True, null=True)
-    purps_cd = models.ForeignKey('CmnPurps', models.DO_NOTHING, db_column='purps_cd')
-    area_gb_cd = models.ForeignKey(CmnAreaGb, models.DO_NOTHING, db_column='area_gb_cd')
-    prg_stat_cd = models.ForeignKey(CmnPrgStat, models.DO_NOTHING, db_column='prg_stat_cd', blank=True, null=True)
+    purps_cd = models.IntegerField()
+    purps_nm = models.CharField(max_length=150, blank=True, null=True)
+    area_gb_cd = models.IntegerField()
+    prg_stat_cd = models.IntegerField(blank=True, null=True)
     road_address = models.CharField(max_length=255)
     sigungu_cd = models.CharField(max_length=5)
     bjdong_cd = models.CharField(max_length=5)
-    pnu = models.CharField(max_length=15)
+    pnu = models.CharField(max_length=30)
     tot_area = models.FloatField(blank=True, null=True)
     lndcgr_code_nm = models.CharField(max_length=45, blank=True, null=True)
     plat_area = models.FloatField(blank=True, null=True)
@@ -49,6 +50,7 @@ class CmnProject(models.Model):
     class Meta:
         managed = False
         db_table = 'cmn_project'
+
 
 
 class CmnPurps(models.Model):

@@ -27,7 +27,7 @@
                         {% if calc_list %}
                             {% for calc in calc_list %}
                                 <tr>
-                                    <th scope="row">1</th>
+                                    <th scope="row">{{ forloop.counter }}</th>
                                     <td>마석우리 오피스텔</td>
                                     <td>열관류율 계산기</td>
                                     <td>{{ calc.wrt_dt }}</td>

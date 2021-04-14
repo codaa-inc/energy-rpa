@@ -16,19 +16,22 @@
                 const sido = data.roadAddress.split(" ")[0];
                 const gugun = data.roadAddress.split(" ")[1];
                 const areaGbCd = getAreaGbCd(sido, gugun);
-                // 요청 파라미터 : 도로명주소, 시군구코드, 법정동코드, 지역구분
-                const reqParam = {"road_address":data.roadAddress, "sigungu_cd":data.sigunguCode,
-                    "bjdong_cd":data.bcode, "area_gb_cd":areaGbCd, "csrfmiddlewaretoken":'{{ csrf_token }}'};
-                console.log(reqParam);
+                // Request Parameter : 도로명주소, 시군구코드, 법정동코드, 지역구분
+                const b = String(data.buildingCode);
+                const reqParam = JSON.stringify({"road_address":data.roadAddress, "bname" : data.bname,
+                    "pnu" : b.substring(0,19), "sigungu_cd":b.substring(0,5), "bjdong_cd":b.substring(5,10),
+                    "bun":b.substring(11,15), "ji":b.substring(15,19), "area_gb_cd":areaGbCd});
                 $.ajax({
                     cache: false,
                     url: '/project/',
                     type: 'POST',
                     async: false,
                     data: reqParam,
+                    contentType: 'application/json;charset=utf-8',
                     success: function (data) {
                         if (data.result) {
-                            window.location.href = "/project/";
+                            console.log("project_cd : ", data.project_cd);
+                            window.location.href = "/project/" + data.project_cd;
                         } else {
                             alert("일시적인 서버 오류입니다.\n관리자에게 문의하세요.");
                         }

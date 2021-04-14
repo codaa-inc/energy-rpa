@@ -24,6 +24,7 @@ def get_user_uvalue(request, uvalue_tmpl_cd):
 def select_uvalue(request, id):
     if id is not None:
         calc = CalcUvalueTmpl.objects.filter(uvalue_tmpl_cd=id)
+        print(str(calc.query))
         json_serializer = json.Serializer()
         context = {"calc": json_serializer.serialize(calc)}
     return JsonResponse(context)
@@ -70,6 +71,7 @@ def load_data_uvalue(request):
 
 def report_uvalue(request, uvalue_tmpl_cd):
     calc = CalcUvalueTmpl.objects.filter(uvalue_tmpl_cd=uvalue_tmpl_cd).values()[0]
+    print(str(calc.query))
     return render_to_pdf('uvalue_calc.html', {'pagesize': 'A4', 'mylist': calc})
 
 def render_to_pdf(template_src, context_dict):
